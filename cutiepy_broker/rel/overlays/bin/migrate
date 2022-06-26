@@ -1,0 +1,3 @@
+#!/bin/sh
+cd -P -- "$(dirname -- "$0")"
+exec ./cutiepy_broker eval CutiepyBroker.Release.migrate
