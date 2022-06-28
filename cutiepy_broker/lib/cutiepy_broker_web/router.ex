@@ -2,28 +2,30 @@ defmodule CutiepyBrokerWeb.Router do
   use CutiepyBrokerWeb, :router
 
   pipeline :browser do
-    plug(:accepts, ["html"])
-    plug(:fetch_session)
-    plug(:fetch_live_flash)
-    plug(:put_root_layout, {CutiepyBrokerWeb.LayoutView, :root})
-    plug(:protect_from_forgery)
-    plug(:put_secure_browser_headers)
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, {CutiepyBrokerWeb.LayoutView, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
   end
 
   pipeline :api do
-    plug(:accepts, ["json"])
+    plug :accepts, ["json"]
   end
 
   scope "/", CutiepyBrokerWeb do
     pipe_through(:browser)
 
-    get("/", PageController, :index)
+    get "/", PageController, :index
   end
 
   scope "/api", CutiepyBrokerWeb do
-    pipe_through(:api)
+    pipe_through :api
 
-    post("/enqueue_job", EnqueueJobController, :create)
+    post "/enqueue_job", EnqueueJobController, :create
+    post "/assign_job_run", AssignJobRunController, :create
+    post "/complete_job_run", CompleteJobRunController, :create
   end
 
   # Other scopes may use custom stacks.
@@ -42,9 +44,9 @@ defmodule CutiepyBrokerWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through(:browser)
+      pipe_through :browser
 
-      live_dashboard("/dashboard", metrics: CutiepyBrokerWeb.Telemetry)
+      live_dashboard "/dashboard", metrics: CutiepyBrokerWeb.Telemetry
     end
   end
 end

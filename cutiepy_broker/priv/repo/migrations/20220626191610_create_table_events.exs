@@ -3,8 +3,8 @@ defmodule CutiepyBroker.Repo.Migrations.CreateTableEvents do
 
   def change do
     create table(:events, primary_key: false) do
-      add(:id, :uuid, primary_key: true)
-      add(:data, :map)
+      add :id, :uuid, primary_key: true
+      add :data, :map, null: false
     end
   end
 end

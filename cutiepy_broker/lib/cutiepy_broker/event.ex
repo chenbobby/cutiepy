@@ -3,6 +3,6 @@ defmodule CutiepyBroker.Event do
   use CutiepyBroker.Schema
 
   schema "events" do
-    field(:data, :map)
+    field :data, :map
   end
 end

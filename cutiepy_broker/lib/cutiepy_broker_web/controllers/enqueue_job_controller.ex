@@ -6,7 +6,7 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
         %{
           "job" =>
             %{
-              "function_serialized" => _,
+              "callable_key" => _,
               "args_serialized" => _,
               "kwargs_serialized" => _
             } = job_params
