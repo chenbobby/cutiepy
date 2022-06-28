@@ -20,19 +20,17 @@ defmodule CutiepyBroker.Commands do
         status: "READY"
       }
 
-      event = %CutiepyBroker.Event{
-        id: Ecto.UUID.generate(),
-        data: %{
-          event_type: "enqueued_job",
-          enqueued_job_at: now,
-          job_id: job.id
-        }
+      event = %{
+        "id" => Ecto.UUID.generate(),
+        "event_type" => "enqueued_job",
+        "enqueued_job_at" => now,
+        "job_id" => job.id
       }
 
       CutiepyBroker.Repo.insert!(job)
-      CutiepyBroker.Repo.insert!(event)
+      CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-      CutiepyBroker.Event.string_map(event)
+      event
     end)
     |> case do
       {:ok, event} -> {:ok, event}
@@ -64,25 +62,23 @@ defmodule CutiepyBroker.Commands do
 
           job_changeset = Ecto.Changeset.change(job, status: "IN_PROGRESS")
 
-          event = %CutiepyBroker.Event{
-            id: Ecto.UUID.generate(),
-            data: %{
-              event_type: "assigned_job_run",
-              assigned_job_run_at: now,
-              job_run_id: job_run.id,
-              job_id: job.id,
-              job_callable_key: job.callable_key,
-              job_args_serialized: job.args_serialized,
-              job_kwargs_serialized: job.kwargs_serialized,
-              worker_id: worker_id
-            }
+          event = %{
+            "id" => Ecto.UUID.generate(),
+            "event_type" => "assigned_job_run",
+            "assigned_job_run_at" => now,
+            "job_run_id" => job_run.id,
+            "job_id" => job.id,
+            "job_callable_key" => job.callable_key,
+            "job_args_serialized" => job.args_serialized,
+            "job_kwargs_serialized" => job.kwargs_serialized,
+            "worker_id" => worker_id
           }
 
           CutiepyBroker.Repo.update!(job_changeset)
           CutiepyBroker.Repo.insert!(job_run)
-          CutiepyBroker.Repo.insert!(event)
+          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-          CutiepyBroker.Event.string_map(event)
+          event
       end
     end)
     |> case do
@@ -129,20 +125,18 @@ defmodule CutiepyBroker.Commands do
           result_serialized: result_serialized
         )
 
-      event = %CutiepyBroker.Event{
-        id: Ecto.UUID.generate(),
-        data: %{
-          event_type: "completed_job_run",
-          completed_job_run_at: now,
-          job_run_id: job_run_id
-        }
+      event = %{
+        "id" => Ecto.UUID.generate(),
+        "event_type" => "completed_job_run",
+        "completed_job_run_at" => now,
+        "job_run_id" => job_run_id
       }
 
       CutiepyBroker.Repo.update!(job_run_changeset)
       CutiepyBroker.Repo.update!(job_changeset)
-      CutiepyBroker.Repo.insert!(event)
+      CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-      CutiepyBroker.Event.string_map(event)
+      event
     end)
     |> case do
       {:ok, event} -> {:ok, event}

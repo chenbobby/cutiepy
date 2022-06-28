@@ -6,9 +6,10 @@ defmodule CutiepyBroker.Event do
     field :data, :map
   end
 
-  def string_map(event) do
-    for {k, v} <- event.data,
-        into: %{"id" => event.id},
-        do: {to_string(k), v}
+  def from_map(event) do
+    %CutiepyBroker.Event{
+      id: event["id"],
+      data: Map.delete(event, "id")
+    }
   end
 end
