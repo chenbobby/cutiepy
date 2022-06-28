@@ -1,9 +1,0 @@
-<h1>Jobs</h1>
-<%= case @jobs do %>
-<% [] -> %>
-	<p>No jobs yet! See the documentation on how to create new jobs for CutiePy.</p>
-<% jobs -> %>
-	<%= for job <- jobs do %>
-	<p><%= job.id %> : <%= job.status %> : <%= job.result_serialized %></p>
-	<% end %>
-<% end %>

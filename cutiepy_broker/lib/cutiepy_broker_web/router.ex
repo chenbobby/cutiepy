@@ -18,7 +18,7 @@ defmodule CutiepyBrokerWeb.Router do
     pipe_through(:browser)
 
     get "/", PageController, :index
-    get "/jobs", JobsController, :index
+    live "/jobs", JobsLiveView
   end
 
   scope "/api", CutiepyBrokerWeb do
