@@ -1,0 +1,11 @@
+<%= case @job do %>
+<% nil -> %>
+	<p>Job not found...</p>
+	<%= live_redirect "View all jobs", to: Routes.live_path(@socket, CutiepyBrokerWeb.Jobs.Index) %>
+<% job -> %>
+	<h1>Job: <%= job.id %></h1>
+	<p>Status: <%= job.status %>
+	<p>Updated at <%= job.updated_at %>
+	<p>Enqueued at <%= job.enqueued_at %>
+	<p>Result (serialized): <%= job.result_serialized %>
+<% end %>

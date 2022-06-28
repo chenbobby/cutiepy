@@ -1,0 +1,11 @@
+<h1>Jobs</h1>
+<%= case @jobs do %>
+<% [] -> %>
+	<p>No jobs yet! See the documentation on how to create new jobs for CutiePy.</p>
+<% jobs -> %>
+	<%= for job <- jobs do %>
+		<%= live_redirect to: Routes.live_path(@socket, CutiepyBrokerWeb.Jobs.Show, job) do %>
+			<p><%= job.updated_at %> - <%= job.callable_key %> : <%= job.status %></p>
+		<% end %>
+	<% end %>
+<% end %>

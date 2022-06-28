@@ -30,11 +30,11 @@ defmodule CutiepyBroker.Commands do
     }
 
     Ecto.Multi.new()
-    |> Ecto.Multi.insert(:event, event)
     |> Ecto.Multi.insert(:job, job)
+    |> Ecto.Multi.insert(:event, event)
     |> CutiepyBroker.Repo.transaction()
     |> case do
-      {:ok, _} -> {:ok, job_id}
+      {:ok, _} -> {:ok, CutiepyBroker.Event.flatten(event)}
       {:error, _failed_operation, _failed_value, _changes} -> :error
     end
   end
