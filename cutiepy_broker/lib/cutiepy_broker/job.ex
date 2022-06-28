@@ -10,5 +10,8 @@ defmodule CutiepyBroker.Job do
     field :args_serialized, :string
     field :kwargs_serialized, :string
     field :result_serialized, :string
+    field :args_repr, {:array, :string}
+    field :kwargs_repr, {:map, :string}
+    field :result_repr, :string
   end
 end

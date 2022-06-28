@@ -77,6 +77,7 @@ def worker_command(broker_url: str) -> NoReturn:
             json={
                 "job_run_id": job_run_id,
                 "job_run_result_serialized": serialize(result),
+                "job_run_result_repr": repr(result),
                 "worker_id": worker_id,
             },
         )

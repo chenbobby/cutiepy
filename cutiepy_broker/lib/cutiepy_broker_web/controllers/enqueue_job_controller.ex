@@ -6,7 +6,9 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
         %{
           "job_callable_key" => _,
           "job_args_serialized" => _,
-          "job_kwargs_serialized" => _
+          "job_kwargs_serialized" => _,
+          "job_args_repr" => _,
+          "job_kwargs_repr" => _
         } = params
       ) do
     {:ok, event} = CutiepyBroker.Commands.enqueue_job(params)

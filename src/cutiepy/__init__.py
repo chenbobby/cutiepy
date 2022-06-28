@@ -54,6 +54,8 @@ class Registry:
                 "job_callable_key": callable_key,
                 "job_args_serialized": serialize(args),
                 "job_kwargs_serialized": serialize(kwargs),
+                "job_args_repr": [repr(arg) for arg in args],
+                "job_kwargs_repr": {k: repr(v) for k, v in kwargs},
             },
         )
         response_body = response.json()

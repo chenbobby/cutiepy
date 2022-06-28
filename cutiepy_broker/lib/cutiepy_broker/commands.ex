@@ -5,7 +5,9 @@ defmodule CutiepyBroker.Commands do
   def enqueue_job(%{
         "job_callable_key" => callable_key,
         "job_args_serialized" => args_serialized,
-        "job_kwargs_serialized" => kwargs_serialized
+        "job_kwargs_serialized" => kwargs_serialized,
+        "job_args_repr" => args_repr,
+        "job_kwargs_repr" => kwargs_repr
       }) do
     CutiepyBroker.Repo.transaction(fn ->
       now = DateTime.utc_now()
@@ -17,6 +19,8 @@ defmodule CutiepyBroker.Commands do
         callable_key: callable_key,
         args_serialized: args_serialized,
         kwargs_serialized: kwargs_serialized,
+        args_repr: args_repr,
+        kwargs_repr: kwargs_repr,
         status: "READY"
       }
 
@@ -90,6 +94,7 @@ defmodule CutiepyBroker.Commands do
   def complete_job_run(%{
         "job_run_id" => job_run_id,
         "job_run_result_serialized" => result_serialized,
+        "job_run_result_repr" => result_repr,
         "worker_id" => worker_id
       }) do
     CutiepyBroker.Repo.transaction(fn ->
@@ -122,7 +127,8 @@ defmodule CutiepyBroker.Commands do
           job,
           updated_at: now,
           status: "DONE",
-          result_serialized: result_serialized
+          result_serialized: result_serialized,
+          result_repr: result_repr
         )
 
       event = %{

@@ -6,6 +6,7 @@ defmodule CutiepyBrokerWeb.CompleteJobRunController do
         %{
           "job_run_id" => _,
           "job_run_result_serialized" => _,
+          "job_run_result_repr" => _,
           "worker_id" => _
         } = params
       ) do
