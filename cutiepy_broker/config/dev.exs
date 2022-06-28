@@ -22,8 +22,7 @@ config :cutiepy_broker, CutiepyBrokerWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "IelRpG6La4jz/prmWljTioCxTZSXz3XpSKS+mqTD5oRY3tIT9Xl9YXdSLwPbEDNc",
   watchers: [
-    # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support

@@ -47,7 +47,7 @@ defmodule CutiepyBrokerWeb.Router do
     scope "/" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: CutiepyBrokerWeb.Telemetry
+      live_dashboard "/_dashboard", metrics: CutiepyBrokerWeb.Telemetry
     end
   end
 end
