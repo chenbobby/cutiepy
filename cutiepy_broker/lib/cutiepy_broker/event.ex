@@ -6,7 +6,9 @@ defmodule CutiepyBroker.Event do
     field :data, :map
   end
 
-  def flatten(event) do
-    Map.put(event.data, :id, event.id)
+  def string_map(event) do
+    for {k, v} <- event.data,
+        into: %{"id" => event.id},
+        do: {to_string(k), v}
   end
 end

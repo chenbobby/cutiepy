@@ -4,16 +4,12 @@ defmodule CutiepyBrokerWeb.CompleteJobRunController do
   def create(
         conn,
         %{
-          "job_run" =>
-            %{
-              "job_run_id" => _,
-              "worker_id" => _,
-              "result_serialized" => _
-            } = job_run_params
-        }
+          "job_run_id" => _,
+          "job_run_result_serialized" => _,
+          "worker_id" => _
+        } = params
       ) do
-    :ok = CutiepyBroker.Commands.complete_job_run(job_run_params)
-
-    render(conn, "completed.json")
+    {:ok, event} = CutiepyBroker.Commands.complete_job_run(params)
+    render(conn, "response.json", event: event)
   end
 end

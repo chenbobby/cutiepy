@@ -1,16 +1,23 @@
 defmodule CutiepyBrokerWeb.AssignJobRunView do
   use CutiepyBrokerWeb, :view
 
-  def render("assigned.json", %{job_run_id: job_run_id, job: job}) do
-    %{
-      job_run_id: job_run_id,
-      callable_key: job.callable_key,
-      args_serialized: job.args_serialized,
-      kwargs_serialized: job.kwargs_serialized
-    }
+  def render("response.json", %{event: nil}) do
+    %{"job_run_id" => nil}
   end
 
-  def render("no_jobs.json", _assigns) do
-    %{job_run_id: nil}
+  def render("response.json", %{
+        event: %{
+          "job_run_id" => job_run_id,
+          "job_callable_key" => job_callable_key,
+          "job_args_serialized" => job_args_serialized,
+          "job_kwargs_serialized" => job_kwargs_serialized
+        }
+      }) do
+    %{
+      "job_run_id" => job_run_id,
+      "job_callable_key" => job_callable_key,
+      "job_args_serialized" => job_args_serialized,
+      "job_kwargs_serialized" => job_kwargs_serialized
+    }
   end
 end

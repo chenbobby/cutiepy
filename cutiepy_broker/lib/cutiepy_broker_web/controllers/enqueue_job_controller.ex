@@ -4,16 +4,13 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
   def create(
         conn,
         %{
-          "job" =>
-            %{
-              "callable_key" => _,
-              "args_serialized" => _,
-              "kwargs_serialized" => _
-            } = job_params
-        }
+          "job_callable_key" => _,
+          "job_args_serialized" => _,
+          "job_kwargs_serialized" => _
+        } = params
       ) do
-    {:ok, event} = CutiepyBroker.Commands.enqueue_job(job_params)
+    {:ok, event} = CutiepyBroker.Commands.enqueue_job(params)
     Phoenix.PubSub.broadcast!(CutiepyBroker.PubSub, "enqueued_job", event)
-    render(conn, "enqueued.json", job_id: event.job_id)
+    render(conn, "response.json", event: event)
   end
 end

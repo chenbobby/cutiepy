@@ -48,18 +48,16 @@ class Registry:
                 f"callable with key {callable_key} is not registered!",
             )
 
-        job = {
-            "callable_key": callable_key,
-            "args_serialized": serialize(args),
-            "kwargs_serialized": serialize(kwargs),
-        }
-
         response: requests.Response = requests.post(
             url=f"{self._broker_url}/api/enqueue_job",
-            json={"job": job},
+            json={
+                "job_callable_key": callable_key,
+                "job_args_serialized": serialize(args),
+                "job_kwargs_serialized": serialize(kwargs),
+            },
         )
         response_body = response.json()
-        return response_body["job"]["job_id"]
+        return response_body["job_id"]
 
     def job(
         self,

@@ -51,7 +51,7 @@ def worker_command(broker_url: str) -> NoReturn:
     while True:
         response: requests.Response = requests.post(
             url=f"{broker_url}/api/assign_job_run",
-            json={"worker": {"id": worker_id}},
+            json={"worker_id": worker_id},
         )
         assert response.ok
 
@@ -64,10 +64,10 @@ def worker_command(broker_url: str) -> NoReturn:
 
         print("Assigned a job!")
 
-        callable_key = response_body["callable_key"]
+        callable_key = response_body["job_callable_key"]
         callable_ = registry[callable_key]
-        args = deserialize(response_body["args_serialized"])
-        kwargs = deserialize(response_body["kwargs_serialized"])
+        args = deserialize(response_body["job_args_serialized"])
+        kwargs = deserialize(response_body["job_kwargs_serialized"])
 
         result = callable_(*args, **kwargs)
         print(f"Result: {result}")
@@ -75,11 +75,9 @@ def worker_command(broker_url: str) -> NoReturn:
         response = requests.post(
             url=f"{broker_url}/api/complete_job_run",
             json={
-                "job_run": {
-                    "job_run_id": job_run_id,
-                    "worker_id": worker_id,
-                    "result_serialized": serialize(result),
-                },
+                "job_run_id": job_run_id,
+                "job_run_result_serialized": serialize(result),
+                "worker_id": worker_id,
             },
         )
         assert response.ok
