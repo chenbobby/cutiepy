@@ -16,8 +16,8 @@ defmodule CutiepyBrokerWeb.CompleteJobRunController do
            job_run_result_repr: job_run_result_repr,
            worker_id: worker_id
          }) do
-      {:ok, event} ->
-        render(conn, "ok.json", event: event)
+      {:ok, [completed_job_run_event, _completed_job_event]} ->
+        render(conn, "ok.json", event: completed_job_run_event)
 
       {:error, :job_run_timed_out} ->
         conn

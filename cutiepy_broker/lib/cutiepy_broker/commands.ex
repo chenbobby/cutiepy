@@ -12,7 +12,7 @@ defmodule CutiepyBroker.Commands do
       )
       |> case do
         nil ->
-          nil
+          []
 
         job ->
           now = DateTime.utc_now()
@@ -44,16 +44,52 @@ defmodule CutiepyBroker.Commands do
           CutiepyBroker.Repo.insert!(job_run)
           CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-          event
+          [event]
       end
     end)
     |> handle_command_transaction_result()
   end
 
+  defp complete_job(%{job_id: job_id}) do
+    CutiepyBroker.Repo.transaction(fn ->
+      job =
+        CutiepyBroker.Repo.one!(
+          from job in CutiepyBroker.Job,
+            where: job.id == ^job_id,
+            select: job
+        )
+
+      case job.status do
+        "IN_PROGRESS" ->
+          now = DateTime.utc_now()
+
+          job_changeset =
+            Ecto.Changeset.change(
+              job,
+              updated_at: now,
+              completed_at: now,
+              status: "DONE"
+            )
+
+          event = %{
+            id: Ecto.UUID.generate(),
+            event_type: "completed_job",
+            completed_job_at: now,
+            job_id: job.id
+          }
+
+          CutiepyBroker.Repo.update!(job_changeset)
+          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
+
+          [event]
+      end
+    end)
+  end
+
   def complete_job_run(%{
         job_run_id: job_run_id,
-        job_run_result_serialized: result_serialized,
-        job_run_result_repr: result_repr,
+        job_run_result_serialized: job_run_result_serialized,
+        job_run_result_repr: job_run_result_repr,
         worker_id: worker_id
       }) do
     CutiepyBroker.Repo.transaction(fn ->
@@ -81,20 +117,12 @@ defmodule CutiepyBroker.Commands do
               job_run,
               updated_at: now,
               completed_at: now,
-              status: "DONE"
-            )
-
-          job_changeset =
-            Ecto.Changeset.change(
-              job,
-              updated_at: now,
-              completed_at: now,
               status: "DONE",
-              result_serialized: result_serialized,
-              result_repr: result_repr
+              result_serialized: job_run_result_serialized,
+              result_repr: job_run_result_repr
             )
 
-          event = %{
+          completed_job_run_event = %{
             id: Ecto.UUID.generate(),
             event_type: "completed_job_run",
             completed_job_run_at: now,
@@ -102,10 +130,11 @@ defmodule CutiepyBroker.Commands do
           }
 
           CutiepyBroker.Repo.update!(job_run_changeset)
-          CutiepyBroker.Repo.update!(job_changeset)
-          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
+          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(completed_job_run_event))
 
-          event
+          {:ok, [completed_job_event]} = complete_job(%{job_id: job.id})
+
+          [completed_job_run_event, completed_job_event]
 
         "TIMED_OUT" ->
           CutiepyBroker.Repo.rollback(:job_run_timed_out)
@@ -146,7 +175,7 @@ defmodule CutiepyBroker.Commands do
       CutiepyBroker.Repo.insert!(job)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-      event
+      [event]
     end)
     |> handle_command_transaction_result()
   end
@@ -198,18 +227,21 @@ defmodule CutiepyBroker.Commands do
       CutiepyBroker.Repo.update!(job_changeset)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-      event
+      [event]
     end)
     |> handle_command_transaction_result()
   end
 
-  defp handle_command_transaction_result({:ok, %{event_type: event_type} = event}) do
-    :ok = Phoenix.PubSub.broadcast!(CutiepyBroker.PubSub, event_type, event)
-    {:ok, event}
+  defp handle_command_transaction_result({:ok, []}) do
+    {:ok, []}
   end
 
-  defp handle_command_transaction_result({:ok, nil}) do
-    {:ok, nil}
+  defp handle_command_transaction_result({:ok, events}) when is_list(events) do
+    Enum.each(events, fn %{event_type: event_type} = event ->
+      :ok = Phoenix.PubSub.broadcast!(CutiepyBroker.PubSub, event_type, event)
+    end)
+
+    {:ok, events}
   end
 
   defp handle_command_transaction_result({:error, error}) do

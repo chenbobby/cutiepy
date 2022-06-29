@@ -14,7 +14,8 @@
 	<p>Positional Arguments: <%= pretty_args %></p>
 	<% pretty_kwargs = "{#{Enum.map(job.kwargs_repr, fn {k, v} -> "#{k}: #{v}" end) |> Enum.join(", ")}}" %>
 	<p>Keyword Arguments: <%= pretty_kwargs %></p>
-	<p>Result: <%= job.result_repr %>
+	<% last_completed_job_run = Enum.filter(@job_runs, fn job_run -> job_run.status == "DONE" end) |> List.last() %>
+	<p>Result: <%= if !is_nil(last_completed_job_run) do last_completed_job_run.result_repr end %></p>
 	<%= case @job_runs do %>
 	<% [] -> %>
 		<p>No job runs yet.<p>

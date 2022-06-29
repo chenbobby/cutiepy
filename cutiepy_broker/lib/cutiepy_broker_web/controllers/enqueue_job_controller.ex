@@ -18,7 +18,7 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
            job_args_repr: job_args_repr,
            job_kwargs_repr: job_kwargs_repr
          }) do
-      {:ok, event} ->
+      {:ok, [event]} ->
         render(conn, "response.json", event: event)
     end
   end
