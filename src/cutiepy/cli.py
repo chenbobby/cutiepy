@@ -69,7 +69,33 @@ def worker_command(broker_url: str) -> NoReturn:
         args = deserialize(response_body["job_args_serialized"])
         kwargs = deserialize(response_body["job_kwargs_serialized"])
 
-        result = callable_(*args, **kwargs)
+        result = None
+        error = None
+        try:
+            result = callable_(*args, **kwargs)
+        except Exception as exc:
+            error = exc
+
+        if error is not None:
+            print(f"Error: {error}")
+            response = requests.post(
+                url=f"{broker_url}/api/fail_job_run",
+                json={
+                    "job_run_id": job_run_id,
+                    "job_run_error_serialized": serialize(error),
+                    "job_run_error_repr": repr(error),
+                    "worker_id": worker_id,
+                },
+            )
+            if response.status_code == requests.codes.CONFLICT:
+                response_body = response.json()
+                error = response_body["error"]
+                print(f"Unable to fail the job run: {error}")
+                continue
+
+            assert response.ok
+            continue
+
         print(f"Result: {result}")
 
         response = requests.post(
@@ -85,7 +111,7 @@ def worker_command(broker_url: str) -> NoReturn:
         if response.status_code == requests.codes.CONFLICT:
             response_body = response.json()
             error = response_body["error"]
-            print(f"Failed to complete the job run: {error}")
+            print(f"Unable to complete the job run: {error}")
             continue
 
         assert response.ok

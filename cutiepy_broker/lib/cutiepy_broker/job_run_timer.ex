@@ -6,6 +6,7 @@ defmodule CutiepyBroker.JobRunTimer do
   def init(_init_arg) do
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "assigned_job_run")
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "completed_job_run")
+    :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "failed_job_run")
     {:ok, nil}
   end
 
@@ -22,6 +23,13 @@ defmodule CutiepyBroker.JobRunTimer do
 
   @impl true
   def handle_info(%{event_type: "completed_job_run", job_run_id: job_run_id}, nil) do
+    [{timer_task_pid, nil}] = Registry.lookup(CutiepyBroker.Registry, job_run_id)
+    :ok = Task.Supervisor.terminate_child(CutiepyBroker.TaskSupervisor, timer_task_pid)
+    {:noreply, nil}
+  end
+
+  @impl true
+  def handle_info(%{event_type: "failed_job_run", job_run_id: job_run_id}, nil) do
     [{timer_task_pid, nil}] = Registry.lookup(CutiepyBroker.Registry, job_run_id)
     :ok = Task.Supervisor.terminate_child(CutiepyBroker.TaskSupervisor, timer_task_pid)
     {:noreply, nil}

@@ -9,6 +9,7 @@
 	<p>Updated at <%= job.updated_at %>
 	<p>Enqueued at <%= job.enqueued_at %>
 	<p>Completed at <%= job.completed_at %>
+	<p>Failed at <%= job.failed_at %>
 	<p>Timed out at <%= job.timed_out_at %>
 	<% pretty_args = "[#{Enum.join(job.args_repr, ", ")}]" %>
 	<p>Positional Arguments: <%= pretty_args %></p>
@@ -16,6 +17,8 @@
 	<p>Keyword Arguments: <%= pretty_kwargs %></p>
 	<% last_completed_job_run = Enum.filter(@job_runs, fn job_run -> job_run.status == "DONE" end) |> List.last() %>
 	<p>Result: <%= if !is_nil(last_completed_job_run) do last_completed_job_run.result_repr end %></p>
+	<% last_failed_job_run = Enum.filter(@job_runs, fn job_run -> job_run.status == "FAILED" end) |> List.last() %>
+	<p>Error: <%= if !is_nil(last_failed_job_run) do last_failed_job_run.error_repr end %></p>
 	<%= case @job_runs do %>
 	<% [] -> %>
 		<p>No job runs yet.<p>

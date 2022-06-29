@@ -24,9 +24,10 @@ defmodule CutiepyBrokerWeb.Router do
   scope "/api", CutiepyBrokerWeb do
     pipe_through :api
 
-    post "/enqueue_job", EnqueueJobController, :create
     post "/assign_job_run", AssignJobRunController, :create
     post "/complete_job_run", CompleteJobRunController, :create
+    post "/enqueue_job", EnqueueJobController, :create
+    post "/fail_job_run", FailJobRunController, :create
   end
 
   # Other scopes may use custom stacks.

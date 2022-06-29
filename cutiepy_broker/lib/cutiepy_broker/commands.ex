@@ -180,6 +180,99 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_transaction_result()
   end
 
+  defp fail_job(%{job_id: job_id}) do
+    CutiepyBroker.Repo.transaction(fn ->
+      job =
+        CutiepyBroker.Repo.one!(
+          from job in CutiepyBroker.Job,
+            where: job.id == ^job_id,
+            select: job
+        )
+
+      case job.status do
+        "IN_PROGRESS" ->
+          now = DateTime.utc_now()
+
+          job_changeset =
+            Ecto.Changeset.change(
+              job,
+              updated_at: now,
+              completed_at: now,
+              status: "FAILED"
+            )
+
+          event = %{
+            id: Ecto.UUID.generate(),
+            event_type: "failed_job",
+            failed_job_at: now,
+            job_id: job.id
+          }
+
+          CutiepyBroker.Repo.update!(job_changeset)
+          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
+
+          [event]
+      end
+    end)
+  end
+
+  def fail_job_run(%{
+        job_run_id: job_run_id,
+        job_run_error_serialized: job_run_error_serialized,
+        job_run_error_repr: job_run_error_repr,
+        worker_id: worker_id
+      }) do
+    CutiepyBroker.Repo.transaction(fn ->
+      job_run =
+        CutiepyBroker.Repo.one!(
+          from job_run in CutiepyBroker.JobRun,
+            where: job_run.id == ^job_run_id,
+            where: job_run.worker_id == ^worker_id,
+            select: job_run
+        )
+
+      case job_run.status do
+        "IN_PROGRESS" ->
+          job =
+            CutiepyBroker.Repo.one!(
+              from job in CutiepyBroker.Job,
+                where: job.id == ^job_run.job_id,
+                select: job
+            )
+
+          now = DateTime.utc_now()
+
+          job_run_changeset =
+            Ecto.Changeset.change(
+              job_run,
+              updated_at: now,
+              completed_at: now,
+              status: "FAILED",
+              error_serialized: job_run_error_serialized,
+              error_repr: job_run_error_repr
+            )
+
+          failed_job_run_event = %{
+            id: Ecto.UUID.generate(),
+            event_type: "failed_job_run",
+            failed_job_run_at: now,
+            job_run_id: job_run_id
+          }
+
+          CutiepyBroker.Repo.update!(job_run_changeset)
+          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(failed_job_run_event))
+
+          {:ok, [failed_job_event]} = fail_job(%{job_id: job.id})
+
+          [failed_job_run_event, failed_job_event]
+
+        "TIMED_OUT" ->
+          CutiepyBroker.Repo.rollback(:job_run_timed_out)
+      end
+    end)
+    |> handle_command_transaction_result()
+  end
+
   def time_out_job_run(%{job_run_id: job_run_id}) do
     CutiepyBroker.Repo.transaction(fn ->
       job_run =
