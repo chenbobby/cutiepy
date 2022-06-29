@@ -197,7 +197,7 @@ defmodule CutiepyBroker.Commands do
             Ecto.Changeset.change(
               job,
               updated_at: now,
-              completed_at: now,
+              failed_at: now,
               status: "FAILED"
             )
 
@@ -246,7 +246,7 @@ defmodule CutiepyBroker.Commands do
             Ecto.Changeset.change(
               job_run,
               updated_at: now,
-              completed_at: now,
+              failed_at: now,
               status: "FAILED",
               exception_serialized: job_run_exception_serialized,
               exception_repr: job_run_exception_repr
