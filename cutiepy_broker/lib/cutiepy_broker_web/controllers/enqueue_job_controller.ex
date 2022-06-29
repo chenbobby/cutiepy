@@ -11,8 +11,9 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
           "job_kwargs_repr" => _
         } = params
       ) do
-    {:ok, event} = CutiepyBroker.Commands.enqueue_job(params)
-    Phoenix.PubSub.broadcast!(CutiepyBroker.PubSub, "enqueued_job", event)
-    render(conn, "response.json", event: event)
+    case CutiepyBroker.Commands.enqueue_job(params) do
+      {:ok, event} ->
+        render(conn, "response.json", event: event)
+    end
   end
 end

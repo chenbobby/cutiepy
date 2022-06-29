@@ -8,9 +8,20 @@
 	<p>Status: <%= job.status %>
 	<p>Updated at <%= job.updated_at %>
 	<p>Enqueued at <%= job.enqueued_at %>
+	<p>Completed at <%= job.completed_at %>
+	<p>Timed out at <%= job.timed_out_at %>
 	<% pretty_args = "[#{Enum.join(job.args_repr, ", ")}]" %>
 	<p>Positional Arguments: <%= pretty_args %></p>
 	<% pretty_kwargs = "{#{Enum.map(job.kwargs_repr, fn {k, v} -> "#{k}: #{v}" end) |> Enum.join(", ")}}" %>
 	<p>Keyword Arguments: <%= pretty_kwargs %></p>
 	<p>Result: <%= job.result_repr %>
+	<%= case @job_runs do %>
+	<% [] -> %>
+		<p>No job runs yet.<p>
+	<% job_runs -> %>
+		<h2>Job Runs</h2>
+		<%= for job_run <- job_runs do %>
+			<p><%= "#{job_run.updated_at} - #{job_run.id} - #{job_run.status}" %>
+		<% end %>
+	<% end %>
 <% end %>

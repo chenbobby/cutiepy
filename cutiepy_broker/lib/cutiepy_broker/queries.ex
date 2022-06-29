@@ -17,4 +17,12 @@ defmodule CutiepyBroker.Queries do
         select: job
     )
   end
+
+  def job_runs(job_id) do
+    CutiepyBroker.Repo.all(
+      from job_run in CutiepyBroker.JobRun,
+        where: job_run.job_id == ^job_id,
+        select: job_run
+    )
+  end
 end

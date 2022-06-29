@@ -55,15 +55,15 @@ def worker_command(broker_url: str) -> NoReturn:
         )
         assert response.ok
 
-        response_body = response.json()
-        job_run_id = response_body["job_run_id"]
-        if job_run_id is None:
+        if response.status_code == requests.codes.NO_CONTENT:
             print("No jobs are ready. Sleeping...")
             time.sleep(0.5)
             continue
 
         print("Assigned a job!")
 
+        response_body = response.json()
+        job_run_id = response_body["job_run_id"]
         callable_key = response_body["job_callable_key"]
         callable_ = registry[callable_key]
         args = deserialize(response_body["job_args_serialized"])
@@ -81,4 +81,11 @@ def worker_command(broker_url: str) -> NoReturn:
                 "worker_id": worker_id,
             },
         )
+
+        if response.status_code == requests.codes.CONFLICT:
+            response_body = response.json()
+            error = response_body["error"]
+            print(f"Failed to complete the job run: {error}")
+            continue
+
         assert response.ok

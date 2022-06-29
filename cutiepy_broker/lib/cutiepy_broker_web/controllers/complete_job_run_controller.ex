@@ -10,7 +10,14 @@ defmodule CutiepyBrokerWeb.CompleteJobRunController do
           "worker_id" => _
         } = params
       ) do
-    {:ok, event} = CutiepyBroker.Commands.complete_job_run(params)
-    render(conn, "response.json", event: event)
+    case CutiepyBroker.Commands.complete_job_run(params) do
+      {:ok, event} ->
+        render(conn, "ok.json", event: event)
+
+      {:error, :job_run_timed_out} ->
+        conn
+        |> put_status(:conflict)
+        |> render("conflict.json", error: :job_run_timed_out)
+    end
   end
 end

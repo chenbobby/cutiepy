@@ -15,9 +15,10 @@ defmodule CutiepyBroker.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: CutiepyBroker.PubSub},
       # Start the Endpoint (http/https)
-      CutiepyBrokerWeb.Endpoint
-      # Start a worker by calling: CutiepyBroker.Worker.start_link(arg)
-      # {CutiepyBroker.Worker, arg}
+      CutiepyBrokerWeb.Endpoint,
+      {Registry, keys: :unique, name: CutiepyBroker.Registry},
+      {Task.Supervisor, name: CutiepyBroker.TaskSupervisor},
+      CutiepyBroker.JobRunTimer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

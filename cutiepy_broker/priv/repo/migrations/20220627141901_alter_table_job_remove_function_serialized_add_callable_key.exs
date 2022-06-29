@@ -2,7 +2,7 @@ defmodule CutiepyBroker.Repo.Migrations.AlterTableJobRemoveFunctionSerializedAdd
   use Ecto.Migration
 
   def change do
-    alter table(:jobs) do
+    alter table(:job) do
       remove :function_serialized
       add :callable_key, :string, null: false, default: "NO_CALLABLE_KEY"
     end
