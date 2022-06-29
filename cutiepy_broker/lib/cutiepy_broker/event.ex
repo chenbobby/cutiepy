@@ -8,8 +8,8 @@ defmodule CutiepyBroker.Event do
 
   def from_map(event) do
     %CutiepyBroker.Event{
-      id: event["id"],
-      data: Map.delete(event, "id")
+      id: event.id,
+      data: Map.delete(event, :id)
     }
   end
 end

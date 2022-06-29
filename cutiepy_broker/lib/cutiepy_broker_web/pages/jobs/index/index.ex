@@ -7,7 +7,7 @@ defmodule CutiepyBrokerWeb.Jobs.Index do
     {:ok, assign(socket, jobs: jobs)}
   end
 
-  def handle_info(%{"event_type" => "enqueued_job"}, socket) do
+  def handle_info(%{event_type: "enqueued_job"}, socket) do
     jobs = CutiepyBroker.Queries.jobs()
     {:noreply, assign(socket, jobs: jobs)}
   end

@@ -4,14 +4,20 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
   def create(
         conn,
         %{
-          "job_callable_key" => _,
-          "job_args_serialized" => _,
-          "job_kwargs_serialized" => _,
-          "job_args_repr" => _,
-          "job_kwargs_repr" => _
-        } = params
+          "job_callable_key" => job_callable_key,
+          "job_args_serialized" => job_args_serialized,
+          "job_kwargs_serialized" => job_kwargs_serialized,
+          "job_args_repr" => job_args_repr,
+          "job_kwargs_repr" => job_kwargs_repr
+        }
       ) do
-    case CutiepyBroker.Commands.enqueue_job(params) do
+    case CutiepyBroker.Commands.enqueue_job(%{
+           job_callable_key: job_callable_key,
+           job_args_serialized: job_args_serialized,
+           job_kwargs_serialized: job_kwargs_serialized,
+           job_args_repr: job_args_repr,
+           job_kwargs_repr: job_kwargs_repr
+         }) do
       {:ok, event} ->
         render(conn, "response.json", event: event)
     end

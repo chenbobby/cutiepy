@@ -10,18 +10,18 @@ defmodule CutiepyBroker.JobRunTimer do
   end
 
   @impl true
-  def handle_info(%{"event_type" => "assigned_job_run", "job_run_id" => job_run_id}, nil) do
+  def handle_info(%{event_type: "assigned_job_run", job_run_id: job_run_id}, nil) do
     Task.Supervisor.start_child(CutiepyBroker.TaskSupervisor, fn ->
       {:ok, _pid} = Registry.register(CutiepyBroker.Registry, job_run_id, nil)
       Process.sleep(500)
-      {:ok, _event} = CutiepyBroker.Commands.time_out_job_run(%{"job_run_id" => job_run_id})
+      {:ok, _event} = CutiepyBroker.Commands.time_out_job_run(%{job_run_id: job_run_id})
     end)
 
     {:noreply, nil}
   end
 
   @impl true
-  def handle_info(%{"event_type" => "completed_job_run", "job_run_id" => job_run_id}, nil) do
+  def handle_info(%{event_type: "completed_job_run", job_run_id: job_run_id}, nil) do
     [{timer_task_pid, nil}] = Registry.lookup(CutiepyBroker.Registry, job_run_id)
     :ok = Task.Supervisor.terminate_child(CutiepyBroker.TaskSupervisor, timer_task_pid)
     {:noreply, nil}
