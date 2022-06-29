@@ -70,20 +70,20 @@ def worker_command(broker_url: str) -> NoReturn:
         kwargs = deserialize(response_body["job_kwargs_serialized"])
 
         result = None
-        error = None
+        exception = None
         try:
             result = callable_(*args, **kwargs)
-        except Exception as exc:
-            error = exc
+        except Exception as e:
+            exception = e
 
-        if error is not None:
-            print(f"Error: {error}")
+        if exception is not None:
+            print(f"Error: {exception}")
             response = requests.post(
                 url=f"{broker_url}/api/fail_job_run",
                 json={
                     "job_run_id": job_run_id,
-                    "job_run_error_serialized": serialize(error),
-                    "job_run_error_repr": repr(error),
+                    "job_run_exception_serialized": serialize(exception),
+                    "job_run_exception_repr": repr(exception),
                     "worker_id": worker_id,
                 },
             )

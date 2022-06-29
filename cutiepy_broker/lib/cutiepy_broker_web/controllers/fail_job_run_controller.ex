@@ -3,14 +3,14 @@ defmodule CutiepyBrokerWeb.FailJobRunController do
 
   def create(conn, %{
         "job_run_id" => job_run_id,
-        "job_run_error_serialized" => job_run_error_serialized,
-        "job_run_error_repr" => job_run_error_repr,
+        "job_run_exception_serialized" => job_run_exception_serialized,
+        "job_run_exception_repr" => job_run_exception_repr,
         "worker_id" => worker_id
       }) do
     case CutiepyBroker.Commands.fail_job_run(%{
            job_run_id: job_run_id,
-           job_run_error_serialized: job_run_error_serialized,
-           job_run_error_repr: job_run_error_repr,
+           job_run_exception_serialized: job_run_exception_serialized,
+           job_run_exception_repr: job_run_exception_repr,
            worker_id: worker_id
          }) do
       {:ok, [failed_job_run_event | _]} ->

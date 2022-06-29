@@ -4,8 +4,8 @@ defmodule CutiepyBroker.Repo.Migrations.AlterTableJobRunAddFailedAtAddErrorSeria
   def change do
     alter table(:job_run) do
       add :failed_at, :utc_datetime_usec
-      add :error_serialized, :string
-      add :error_repr, :string
+      add :exception_serialized, :string
+      add :exception_repr, :string
     end
   end
 end

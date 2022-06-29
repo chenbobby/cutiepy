@@ -218,8 +218,8 @@ defmodule CutiepyBroker.Commands do
 
   def fail_job_run(%{
         job_run_id: job_run_id,
-        job_run_error_serialized: job_run_error_serialized,
-        job_run_error_repr: job_run_error_repr,
+        job_run_exception_serialized: job_run_exception_serialized,
+        job_run_exception_repr: job_run_exception_repr,
         worker_id: worker_id
       }) do
     CutiepyBroker.Repo.transaction(fn ->
@@ -248,8 +248,8 @@ defmodule CutiepyBroker.Commands do
               updated_at: now,
               completed_at: now,
               status: "FAILED",
-              error_serialized: job_run_error_serialized,
-              error_repr: job_run_error_repr
+              exception_serialized: job_run_exception_serialized,
+              exception_repr: job_run_exception_repr
             )
 
           failed_job_run_event = %{

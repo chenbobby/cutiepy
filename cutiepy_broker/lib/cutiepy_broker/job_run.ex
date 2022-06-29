@@ -11,8 +11,8 @@ defmodule CutiepyBroker.JobRun do
     field :status, :string
     field :result_serialized, :string
     field :result_repr, :string
-    field :error_serialized, :string
-    field :error_repr, :string
+    field :exception_serialized, :string
+    field :exception_repr, :string
     field :job_id, :string
     field :worker_id, :string
   end
