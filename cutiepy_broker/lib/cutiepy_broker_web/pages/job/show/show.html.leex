@@ -1,7 +1,7 @@
 <%= case @job do %>
 <% nil -> %>
 	<p>Job not found...</p>
-	<%= live_redirect "View all jobs", to: Routes.live_path(@socket, CutiepyBrokerWeb.Jobs.Index) %>
+	<%= live_redirect "View all jobs", to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Index) %>
 <% job -> %>
 	<h1>Job: <%= job.callable_key %></h1>
 	<p>Job ID: <%= job.id %>
@@ -15,7 +15,7 @@
 	<p>Positional Arguments: <%= pretty_args %></p>
 	<% pretty_kwargs = "{#{Enum.map(job.kwargs_repr, fn {k, v} -> "#{k}: #{v}" end) |> Enum.join(", ")}}" %>
 	<p>Keyword Arguments: <%= pretty_kwargs %></p>
-	<% last_completed_job_run = Enum.filter(@job_runs, fn job_run -> job_run.status == "DONE" end) |> List.last() %>
+	<% last_completed_job_run = Enum.filter(@job_runs, fn job_run -> job_run.status == "SUCCESS" end) |> List.last() %>
 	<p>Result: <%= if !is_nil(last_completed_job_run) do last_completed_job_run.result_repr end %></p>
 	<% last_failed_job_run = Enum.filter(@job_runs, fn job_run -> job_run.status == "FAILED" end) |> List.last() %>
 	<p>Error: <%= if !is_nil(last_failed_job_run) do last_failed_job_run.exception_repr end %></p>

@@ -1,0 +1,87 @@
+	<div class="mx-auto">
+		<div class="px-8 py-6">
+			<h1 class="text-2xl">Job Queue</h1>
+			<%= case @jobs do %>
+			<% [] -> %>
+				<p>No jobs yet! See the documentation on how to create new jobs for CutiePy.</p>
+			<% jobs -> %>
+				<table class="shadow-md rounded-lg">
+					<thead class="bg-slate-200 text-slate-700 border-b-2 border-slate-300">
+						<tr>
+							<th>
+								<div class="w-24 px-6 py-4 text-left tracking-wide">
+									ID
+								</div>
+							</th>
+							<th>
+								<div class="w-56 px-6 py-4 text-left tracking-wide">
+									NAME
+								</div>
+							</th>
+							<th>
+								<div class="w-24 px-6 py-4 text-left tracking-wide">
+									STATUS
+								</div>
+							</th>
+							<th>
+								<div class="w-56 px-6 py-4 text-left tracking-wide">
+									LAST UPDATED
+								</div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<%= for job <- jobs do %>
+							<tr
+								class="group hover:bg-slate-100 hover:cursor-pointer"
+								phx-click="redirect_to_job_show"
+								phx-value-job_id=<%= job.id %>
+								>
+								<td>
+									<div class="px-6 py-4 text-sm text-left font-mono group-hover:underline">
+										<%= String.slice(job.id, -6..-1) %>
+									</div>
+								</td>
+								<td>
+									<div class="px-6 py-4 text-sm text-left font-mono">
+										<%= job.callable_key %>
+									</div>
+								</td>
+								<td>
+									<div class="px-6 py-4 text-left">
+										<%= case job.status do %>
+											<% "READY" -> %>
+												<div>
+													Ready
+												</div>
+											<% "IN_PROGRESS" -> %>
+												<div>
+													In Progress
+												</div>
+											<% "SUCCESS" -> %>
+												<div>
+													Success
+												</div>
+											<% "FAILED" -> %>
+												<div>
+													Failed
+												</div>
+											<% "TIMED_OUT" -> %>
+												<div>
+													Timed Out
+												</div>
+										<% end %>
+									</div>
+								</td>
+								<td>
+									<div class="px-6 py-4 text-left">
+										<%= Timex.from_now(job.updated_at) %>
+									</div>
+								</td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+			<% end %>
+		</div>
+	</div>

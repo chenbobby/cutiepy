@@ -68,7 +68,7 @@ defmodule CutiepyBroker.Commands do
               job,
               updated_at: now,
               completed_at: now,
-              status: "DONE"
+              status: "SUCCESS"
             )
 
           event = %{
@@ -117,7 +117,7 @@ defmodule CutiepyBroker.Commands do
               job_run,
               updated_at: now,
               completed_at: now,
-              status: "DONE",
+              status: "SUCCESS",
               result_serialized: job_run_result_serialized,
               result_repr: job_run_result_repr
             )
