@@ -32,9 +32,9 @@ class Registry:
     def __contains__(self, callable_key: str) -> bool:
         return callable_key in self._callable_key_to_callable
 
-    def enqueue(
+    def enqueue_job(
         self,
-        callable_: Callable,
+        registered_callable: "RegisteredCallable",
         args: List = [],
         kwargs: Dict = {},
     ) -> str:
@@ -42,7 +42,7 @@ class Registry:
         `enqueue` enqueues a job to execute `callable` with positional
         arguments `args` and keyword arguments `kwargs`.
         """
-        callable_key = _callable_key(callable_)
+        callable_key = registered_callable.callable_key
         if callable_key not in self:
             raise RuntimeError(
                 f"callable with key {callable_key} is not registered!",
@@ -64,16 +64,16 @@ class Registry:
     def job(
         self,
         callable_: Callable,
-    ) -> "Job":
+    ) -> "RegisteredCallable":
         """
         `job` adds `callable` into the CutiePy registry.
         """
         callable_key = _callable_key(callable_)
         self[callable_key] = callable_
-        return Job(registry=self, callable_=callable_)
+        return RegisteredCallable(registry=self, callable_=callable_)
 
 
-class Job:
+class RegisteredCallable:
     _registry: Registry
     _callable: Callable
 
@@ -84,9 +84,13 @@ class Job:
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         return self._callable(*args, **kwargs)
 
-    def enqueue(self, args: List = [], kwargs: Dict = {}) -> str:
-        return self._registry.enqueue(
-            callable_=self._callable,
+    @property
+    def callable_key(self) -> str:
+        return _callable_key(self._callable)
+
+    def enqueue_job(self, args: List = [], kwargs: Dict = {}) -> str:
+        return self._registry.enqueue_job(
+            registered_callable=self,
             args=args,
             kwargs=kwargs,
         )
