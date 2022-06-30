@@ -24,6 +24,7 @@ defmodule CutiepyBroker.Queries do
     CutiepyBroker.Repo.all(
       from job in CutiepyBroker.Job,
         order_by: [desc: job.updated_at],
+        limit: 20,
         select: job
     )
   end
