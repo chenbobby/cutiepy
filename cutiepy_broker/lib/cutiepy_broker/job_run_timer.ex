@@ -7,35 +7,68 @@ defmodule CutiepyBroker.JobRunTimer do
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "assigned_job_run")
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "completed_job_run")
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "failed_job_run")
-    {:ok, nil}
+    job_run_id_to_timer_ref = %{}
+    {:ok, job_run_id_to_timer_ref}
   end
 
   @impl true
-  def handle_info(%{event_type: "assigned_job_run", job_run_id: job_run_id}, nil) do
-    Task.Supervisor.start_child(CutiepyBroker.TaskSupervisor, fn ->
-      {:ok, _pid} = Registry.register(CutiepyBroker.Registry, job_run_id, nil)
-      Process.sleep(500)
-      {:ok, _event} = CutiepyBroker.Commands.time_out_job_run(%{job_run_id: job_run_id})
-    end)
+  def handle_info(
+        %{event_type: "assigned_job_run", job_run_id: job_run_id},
+        job_run_id_to_timer_ref
+      ) do
+    job = CutiepyBroker.Queries.job(%{job_run_id: job_run_id})
 
-    {:noreply, nil}
+    case job.job_run_timeout_ms do
+      nil ->
+        {:noreply, job_run_id_to_timer_ref}
+
+      job_run_timeout_ms ->
+        timer_ref = Process.send_after(self(), {:timeout_job_run, job_run_id}, job_run_timeout_ms)
+        job_run_id_to_timer_ref = Map.put(job_run_id_to_timer_ref, job_run_id, timer_ref)
+        {:noreply, job_run_id_to_timer_ref}
+    end
   end
 
   @impl true
-  def handle_info(%{event_type: "completed_job_run", job_run_id: job_run_id}, nil) do
-    [{timer_task_pid, nil}] = Registry.lookup(CutiepyBroker.Registry, job_run_id)
-    :ok = Task.Supervisor.terminate_child(CutiepyBroker.TaskSupervisor, timer_task_pid)
-    {:noreply, nil}
+  def handle_info(
+        %{event_type: "completed_job_run", job_run_id: job_run_id},
+        job_run_id_to_timer_ref
+      ) do
+    case job_run_id_to_timer_ref[job_run_id] do
+      nil ->
+        {:noreply, job_run_id_to_timer_ref}
+
+      timer_ref ->
+        Process.cancel_timer(timer_ref)
+        job_run_id_to_timer_ref = Map.delete(job_run_id_to_timer_ref, job_run_id)
+        {:noreply, job_run_id_to_timer_ref}
+    end
   end
 
   @impl true
-  def handle_info(%{event_type: "failed_job_run", job_run_id: job_run_id}, nil) do
-    [{timer_task_pid, nil}] = Registry.lookup(CutiepyBroker.Registry, job_run_id)
-    :ok = Task.Supervisor.terminate_child(CutiepyBroker.TaskSupervisor, timer_task_pid)
-    {:noreply, nil}
+  def handle_info(
+        %{event_type: "failed_job_run", job_run_id: job_run_id},
+        job_run_id_to_timer_ref
+      ) do
+    case job_run_id_to_timer_ref[job_run_id] do
+      nil ->
+        {:noreply, job_run_id_to_timer_ref}
+
+      timer_ref ->
+        Process.cancel_timer(timer_ref)
+        job_run_id_to_timer_ref = Map.delete(job_run_id_to_timer_ref, job_run_id)
+        {:noreply, job_run_id_to_timer_ref}
+    end
+  end
+
+  @impl true
+  def handle_info({:timeout_job_run, job_run_id}, job_run_id_to_timer_ref) do
+    {:ok, _event} = CutiepyBroker.Commands.time_out_job_run(%{job_run_id: job_run_id})
+    job_run_id_to_timer_ref = Map.delete(job_run_id_to_timer_ref, job_run_id)
+    {:noreply, job_run_id_to_timer_ref}
   end
 
   def start_link(init_arg) do
-    GenServer.start_link(CutiepyBroker.JobRunTimer, init_arg)
+    GenServer.start_link(__MODULE__, init_arg)
   end
 end

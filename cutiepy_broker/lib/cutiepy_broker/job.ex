@@ -11,8 +11,10 @@ defmodule CutiepyBroker.Job do
     field :status, :string
     field :callable_key, :string
     field :args_serialized, :string
-    field :args_repr, {:array, :string}
     field :kwargs_serialized, :string
+    field :args_repr, {:array, :string}
     field :kwargs_repr, {:map, :string}
+    field :job_timeout_ms, :integer
+    field :job_run_timeout_ms, :integer
   end
 end

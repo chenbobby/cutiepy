@@ -19,6 +19,11 @@ defmodule CutiepyBrokerWeb.CompleteJobRunController do
       {:ok, [completed_job_run_event | _]} ->
         render(conn, "ok.json", event: completed_job_run_event)
 
+      {:error, :job_run_canceled} ->
+        conn
+        |> put_status(:conflict)
+        |> render("conflict.json", error: :job_run_canceled)
+
       {:error, :job_run_timed_out} ->
         conn
         |> put_status(:conflict)

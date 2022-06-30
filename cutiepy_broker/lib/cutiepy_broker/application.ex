@@ -16,8 +16,7 @@ defmodule CutiepyBroker.Application do
       {Phoenix.PubSub, name: CutiepyBroker.PubSub},
       # Start the Endpoint (http/https)
       CutiepyBrokerWeb.Endpoint,
-      {Registry, keys: :unique, name: CutiepyBroker.Registry},
-      {Task.Supervisor, name: CutiepyBroker.TaskSupervisor},
+      CutiepyBroker.JobTimer,
       CutiepyBroker.JobRunTimer
     ]
 

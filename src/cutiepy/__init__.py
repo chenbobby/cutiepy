@@ -1,6 +1,6 @@
 import pathlib
 import sys
-from typing import Any, Callable, Dict, List, NoReturn
+from typing import Any, Callable, Dict, List, NoReturn, Optional
 
 import requests
 
@@ -35,18 +35,27 @@ class Registry:
     def enqueue_job(
         self,
         registered_callable: "RegisteredCallable",
+        *,
         args: List = [],
         kwargs: Dict = {},
+        job_timeout_ms: Optional[int] = None,
+        job_run_timeout_ms: Optional[int] = None,
     ) -> str:
         """
-        `enqueue` enqueues a job to execute `callable` with positional
-        arguments `args` and keyword arguments `kwargs`.
+        `enqueue` enqueues a job to execute `registered_callable` with
+        positional arguments `args` and keyword arguments `kwargs`.
         """
         callable_key = registered_callable.callable_key
         if callable_key not in self:
             raise RuntimeError(
                 f"callable with key {callable_key} is not registered!",
             )
+
+        if job_timeout_ms is not None:
+            assert job_timeout_ms >= 0
+
+        if job_run_timeout_ms is not None:
+            assert job_run_timeout_ms >= 0
 
         response: requests.Response = requests.post(
             url=f"{self._broker_url}/api/enqueue_job",
@@ -56,6 +65,8 @@ class Registry:
                 "job_kwargs_serialized": serialize(kwargs),
                 "job_args_repr": [repr(arg) for arg in args],
                 "job_kwargs_repr": {k: repr(v) for k, v in kwargs},
+                "job_timeout_ms": job_timeout_ms,
+                "job_run_timeout_ms": job_run_timeout_ms,
             },
         )
         response_body = response.json()
@@ -88,11 +99,26 @@ class RegisteredCallable:
     def callable_key(self) -> str:
         return _callable_key(self._callable)
 
-    def enqueue_job(self, args: List = [], kwargs: Dict = {}) -> str:
+    def enqueue_job(
+        self,
+        *,
+        args: List = [],
+        kwargs: Dict = {},
+        job_timeout_ms: Optional[int] = None,
+        job_run_timeout_ms: Optional[int] = None,
+    ) -> str:
+        if job_timeout_ms is not None:
+            assert job_timeout_ms >= 0
+
+        if job_run_timeout_ms is not None:
+            assert job_run_timeout_ms >= 0
+
         return self._registry.enqueue_job(
             registered_callable=self,
             args=args,
             kwargs=kwargs,
+            job_timeout_ms=job_timeout_ms,
+            job_run_timeout_ms=job_run_timeout_ms,
         )
 
 

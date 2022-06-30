@@ -8,7 +8,9 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
           "job_args_serialized" => job_args_serialized,
           "job_kwargs_serialized" => job_kwargs_serialized,
           "job_args_repr" => job_args_repr,
-          "job_kwargs_repr" => job_kwargs_repr
+          "job_kwargs_repr" => job_kwargs_repr,
+          "job_timeout_ms" => job_timeout_ms,
+          "job_run_timeout_ms" => job_run_timeout_ms
         }
       ) do
     case CutiepyBroker.Commands.enqueue_job(%{
@@ -16,7 +18,9 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
            job_args_serialized: job_args_serialized,
            job_kwargs_serialized: job_kwargs_serialized,
            job_args_repr: job_args_repr,
-           job_kwargs_repr: job_kwargs_repr
+           job_kwargs_repr: job_kwargs_repr,
+           job_timeout_ms: job_timeout_ms,
+           job_run_timeout_ms: job_run_timeout_ms
          }) do
       {:ok, [event]} ->
         render(conn, "response.json", event: event)

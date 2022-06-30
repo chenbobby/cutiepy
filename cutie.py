@@ -12,7 +12,7 @@ def fast():
 
 @registry.job
 def slow():
-    time.sleep(1)
+    time.sleep(3)
 
 
 @registry.job
@@ -21,10 +21,11 @@ def fail():
 
 
 if __name__ == "__main__":
-    for _ in range(1):
-        job_id = fast.enqueue_job()
-        print(f"Enqueued a `fast` job with ID {job_id}")
-        job_id = slow.enqueue_job()
-        print(f"Enqueued a `slow` job with ID {job_id}")
-        job_id = fail.enqueue_job()
-        print(f"Enqueued a `fail` job with ID {job_id}")
+    # for _ in range(1):
+    #     job_id = fast.enqueue_job()
+    #     print(f"Enqueued a `fast` job with ID {job_id}")
+    #     job_id = slow.enqueue_job()
+    #     print(f"Enqueued a `slow` job with ID {job_id}")
+    #     job_id = fail.enqueue_job()
+    #     print(f"Enqueued a `fail` job with ID {job_id}")
+    job_id = slow.enqueue_job(job_timeout_ms=2000)

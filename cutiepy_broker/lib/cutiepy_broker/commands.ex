@@ -8,6 +8,78 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_result()
   end
 
+  def cancel_job_run(%{job_run_id: _} = params) do
+    params
+    |> dispatch_cancel_job_run()
+    |> handle_command_result()
+  end
+
+  def complete_job(%{job_id: _} = params) do
+    params
+    |> dispatch_complete_job()
+    |> handle_command_result()
+  end
+
+  def complete_job_run(
+        %{
+          job_run_id: _,
+          job_run_result_serialized: _,
+          job_run_result_repr: _,
+          worker_id: _
+        } = params
+      ) do
+    params
+    |> dispatch_complete_job_run()
+    |> handle_command_result()
+  end
+
+  def enqueue_job(
+        %{
+          job_callable_key: _,
+          job_args_serialized: _,
+          job_kwargs_serialized: _,
+          job_args_repr: _,
+          job_kwargs_repr: _,
+          job_timeout_ms: _,
+          job_run_timeout_ms: _
+        } = params
+      ) do
+    params
+    |> dispatch_enqueue_job()
+    |> handle_command_result()
+  end
+
+  def fail_job(%{job_id: _} = params) do
+    params
+    |> dispatch_fail_job()
+    |> handle_command_result()
+  end
+
+  def fail_job_run(
+        %{
+          job_run_id: _,
+          job_run_exception_serialized: _,
+          job_run_exception_repr: _,
+          worker_id: _
+        } = params
+      ) do
+    params
+    |> dispatch_fail_job_run()
+    |> handle_command_result()
+  end
+
+  def time_out_job(%{job_id: _} = params) do
+    params
+    |> dispatch_time_out_job()
+    |> handle_command_result()
+  end
+
+  def time_out_job_run(%{job_run_id: _} = params) do
+    params
+    |> dispatch_time_out_job_run()
+    |> handle_command_result()
+  end
+
   defp dispatch_assign_job_run(%{worker_id: worker_id}) do
     CutiepyBroker.Repo.transaction(fn ->
       CutiepyBroker.Repo.one(
@@ -55,12 +127,6 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
-  def complete_job(%{job_id: _} = params) do
-    params
-    |> dispatch_complete_job()
-    |> handle_command_result()
-  end
-
   defp dispatch_complete_job(%{job_id: job_id}) do
     CutiepyBroker.Repo.transaction(fn ->
       job =
@@ -97,17 +163,52 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
-  def complete_job_run(
-        %{
-          job_run_id: _,
-          job_run_result_serialized: _,
-          job_run_result_repr: _,
-          worker_id: _
-        } = params
-      ) do
-    params
-    |> dispatch_complete_job_run()
-    |> handle_command_result()
+  defp dispatch_cancel_job_run(%{job_run_id: job_run_id}) do
+    CutiepyBroker.Repo.transaction(fn ->
+      job_run =
+        CutiepyBroker.Repo.one!(
+          from job_run in CutiepyBroker.JobRun,
+            where: job_run.id == ^job_run_id,
+            select: job_run
+        )
+
+      case job_run.status do
+        "IN_PROGRESS" ->
+          now = DateTime.utc_now()
+
+          job_run_changeset =
+            Ecto.Changeset.change(
+              job_run,
+              updated_at: now,
+              canceled_at: now,
+              status: "CANCELED"
+            )
+
+          event = %{
+            id: Ecto.UUID.generate(),
+            event_type: "canceled_job_run",
+            canceled_job_run_at: now,
+            job_run_id: job_run_id
+          }
+
+          CutiepyBroker.Repo.update!(job_run_changeset)
+          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
+
+          [event]
+
+        "SUCCESS" ->
+          CutiepyBroker.Repo.rollback(:job_run_completed)
+
+        "FAILED" ->
+          CutiepyBroker.Repo.rollback(:job_run_completed)
+
+        "CANCELED" ->
+          CutiepyBroker.Repo.rollback(:job_run_canceled)
+
+        "TIMED_OUT" ->
+          CutiepyBroker.Repo.rollback(:job_run_timed_out)
+      end
+    end)
   end
 
   defp dispatch_complete_job_run(%{
@@ -146,7 +247,7 @@ defmodule CutiepyBroker.Commands do
               result_repr: job_run_result_repr
             )
 
-          completed_job_run_event = %{
+          event = %{
             id: Ecto.UUID.generate(),
             event_type: "completed_job_run",
             completed_job_run_at: now,
@@ -154,31 +255,25 @@ defmodule CutiepyBroker.Commands do
           }
 
           CutiepyBroker.Repo.update!(job_run_changeset)
-          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(completed_job_run_event))
+          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-          {:ok, [completed_job_event]} = dispatch_complete_job(%{job_id: job.id})
+          {:ok, events} = dispatch_complete_job(%{job_id: job.id})
 
-          [completed_job_run_event, completed_job_event]
+          [event | events]
+
+        "SUCCESS" ->
+          CutiepyBroker.Repo.rollback(:job_run_completed)
+
+        "FAILED" ->
+          CutiepyBroker.Repo.rollback(:job_run_completed)
+
+        "CANCELED" ->
+          CutiepyBroker.Repo.rollback(:job_run_canceled)
 
         "TIMED_OUT" ->
           CutiepyBroker.Repo.rollback(:job_run_timed_out)
       end
     end)
-  end
-
-  def enqueue_job(
-        %{
-          job_callable_key: _,
-          job_args_serialized: _,
-          job_kwargs_serialized: _,
-          job_args_repr: _,
-          job_kwargs_repr: _,
-          job_timeout_ms: _
-        } = params
-      ) do
-    params
-    |> dispatch_enqueue_job()
-    |> handle_command_result()
   end
 
   defp dispatch_enqueue_job(%{
@@ -187,7 +282,8 @@ defmodule CutiepyBroker.Commands do
          job_kwargs_serialized: job_kwargs_serialized,
          job_args_repr: job_args_repr,
          job_kwargs_repr: job_kwargs_repr,
-         job_timeout_ms: job_timeout_ms
+         job_timeout_ms: job_timeout_ms,
+         job_run_timeout_ms: job_run_timeout_ms
        }) do
     CutiepyBroker.Repo.transaction(fn ->
       now = DateTime.utc_now()
@@ -202,6 +298,7 @@ defmodule CutiepyBroker.Commands do
         args_repr: job_args_repr,
         kwargs_repr: job_kwargs_repr,
         job_timeout_ms: job_timeout_ms,
+        job_run_timeout_ms: job_run_timeout_ms,
         status: "READY"
       }
 
@@ -221,12 +318,6 @@ defmodule CutiepyBroker.Commands do
 
       [event]
     end)
-  end
-
-  def fail_job(%{job_id: _} = params) do
-    params
-    |> dispatch_fail_job()
-    |> handle_command_result()
   end
 
   defp dispatch_fail_job(%{job_id: job_id}) do
@@ -265,19 +356,6 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
-  def fail_job_run(
-        %{
-          job_run_id: _,
-          job_run_exception_serialized: _,
-          job_run_exception_repr: _,
-          worker_id: _
-        } = params
-      ) do
-    params
-    |> dispatch_fail_job_run()
-    |> handle_command_result()
-  end
-
   defp dispatch_fail_job_run(%{
          job_run_id: job_run_id,
          job_run_exception_serialized: job_run_exception_serialized,
@@ -314,7 +392,7 @@ defmodule CutiepyBroker.Commands do
               exception_repr: job_run_exception_repr
             )
 
-          failed_job_run_event = %{
+          event = %{
             id: Ecto.UUID.generate(),
             event_type: "failed_job_run",
             failed_job_run_at: now,
@@ -322,11 +400,11 @@ defmodule CutiepyBroker.Commands do
           }
 
           CutiepyBroker.Repo.update!(job_run_changeset)
-          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(failed_job_run_event))
+          CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-          {:ok, [failed_job_event]} = dispatch_fail_job(%{job_id: job.id})
+          {:ok, events} = dispatch_fail_job(%{job_id: job.id})
 
-          [failed_job_run_event, failed_job_event]
+          [event | events]
 
         "TIMED_OUT" ->
           CutiepyBroker.Repo.rollback(:job_run_timed_out)
@@ -334,10 +412,53 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
-  def time_out_job_run(%{job_run_id: _} = params) do
-    params
-    |> dispatch_time_out_job_run()
-    |> handle_command_result()
+  defp dispatch_time_out_job(%{job_id: job_id}) do
+    CutiepyBroker.Repo.transaction(fn ->
+      job =
+        CutiepyBroker.Repo.one!(
+          from job in CutiepyBroker.Job,
+            where: job.id == ^job_id,
+            where: job.status in ["READY", "IN_PROGRESS"],
+            select: job
+        )
+
+      now = DateTime.utc_now()
+
+      job_changeset =
+        Ecto.Changeset.change(
+          job,
+          updated_at: now,
+          timed_out_at: now,
+          status: "TIMED_OUT"
+        )
+
+      event = %{
+        id: Ecto.UUID.generate(),
+        event_type: "timed_out_job",
+        timed_out_job_at: now,
+        job_id: job_id
+      }
+
+      CutiepyBroker.Repo.update!(job_changeset)
+      CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
+
+      events =
+        case CutiepyBroker.Repo.one(
+               from job_run in CutiepyBroker.JobRun,
+                 where: job_run.job_id == ^job_id,
+                 where: job_run.status == "IN_PROGRESS",
+                 select: job_run
+             ) do
+          nil ->
+            []
+
+          job_run ->
+            {:ok, events} = dispatch_cancel_job_run(%{job_run_id: job_run.id})
+            events
+        end
+
+      [event | events]
+    end)
   end
 
   defp dispatch_time_out_job_run(%{job_run_id: job_run_id}) do
@@ -350,27 +471,11 @@ defmodule CutiepyBroker.Commands do
             select: job_run
         )
 
-      job =
-        CutiepyBroker.Repo.one!(
-          from job in CutiepyBroker.Job,
-            where: job.id == ^job_run.job_id,
-            where: job.status == "IN_PROGRESS",
-            select: job
-        )
-
       now = DateTime.utc_now()
 
       job_run_changeset =
         Ecto.Changeset.change(
           job_run,
-          updated_at: now,
-          timed_out_at: now,
-          status: "TIMED_OUT"
-        )
-
-      job_changeset =
-        Ecto.Changeset.change(
-          job,
           updated_at: now,
           timed_out_at: now,
           status: "TIMED_OUT"
@@ -384,10 +489,11 @@ defmodule CutiepyBroker.Commands do
       }
 
       CutiepyBroker.Repo.update!(job_run_changeset)
-      CutiepyBroker.Repo.update!(job_changeset)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-      [event]
+      {:ok, events} = dispatch_time_out_job(%{job_id: job_run.job_id})
+
+      [event | events]
     end)
   end
 
