@@ -6,26 +6,26 @@ registry = cutiepy.Registry(broker_url="http://localhost:4000")
 
 
 @registry.job
-def fast():
-    time.sleep(0.1)
+def add(x, y):
+    return x + y
 
 
 @registry.job
-def slow():
-    time.sleep(3)
+def slow_add(x, y):
+    time.sleep(2)
+    return x + y
 
 
 @registry.job
-def fail():
-    raise RuntimeError("Oppsie woopsies.")
+def fail(x, y):
+    raise RuntimeError(f"Oppsie woopsies. x={x} y={y}")
 
 
 if __name__ == "__main__":
-    # for _ in range(1):
-    #     job_id = fast.enqueue_job()
-    #     print(f"Enqueued a `fast` job with ID {job_id}")
-    #     job_id = slow.enqueue_job()
-    #     print(f"Enqueued a `slow` job with ID {job_id}")
-    #     job_id = fail.enqueue_job()
-    #     print(f"Enqueued a `fail` job with ID {job_id}")
-    job_id = slow.enqueue_job(job_timeout_ms=2000)
+    add.enqueue_job(args=[1, 2])
+    fail.enqueue_job(args=[1, 2])
+    slow_add.enqueue_job(args=[1, 2])
+    slow_add.enqueue_job(args=[1, 2], job_timeout_ms=1500)
+    slow_add.enqueue_job(args=[1, 2], job_run_timeout_ms=1500)
+    slow_add.enqueue_job(args=[1, 2], job_timeout_ms=6000, job_run_timeout_ms=1500)
+    slow_add.enqueue_job(args=[1, 2], job_timeout_ms=2000, job_run_timeout_ms=2500)

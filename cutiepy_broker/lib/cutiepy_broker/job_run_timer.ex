@@ -2,9 +2,14 @@ defmodule CutiepyBroker.JobRunTimer do
   @moduledoc false
   use GenServer
 
+  def start_link(init_arg) do
+    GenServer.start_link(__MODULE__, init_arg)
+  end
+
   @impl true
   def init(_init_arg) do
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "assigned_job_run")
+    :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "canceled_job_run")
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "completed_job_run")
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "failed_job_run")
     job_run_id_to_timer_ref = %{}
@@ -31,18 +36,18 @@ defmodule CutiepyBroker.JobRunTimer do
 
   @impl true
   def handle_info(
+        %{event_type: "canceled_job_run", job_run_id: job_run_id},
+        job_run_id_to_timer_ref
+      ) do
+    {:noreply, cancel_job_run_timer(job_run_id_to_timer_ref, job_run_id)}
+  end
+
+  @impl true
+  def handle_info(
         %{event_type: "completed_job_run", job_run_id: job_run_id},
         job_run_id_to_timer_ref
       ) do
-    case job_run_id_to_timer_ref[job_run_id] do
-      nil ->
-        {:noreply, job_run_id_to_timer_ref}
-
-      timer_ref ->
-        Process.cancel_timer(timer_ref)
-        job_run_id_to_timer_ref = Map.delete(job_run_id_to_timer_ref, job_run_id)
-        {:noreply, job_run_id_to_timer_ref}
-    end
+    {:noreply, cancel_job_run_timer(job_run_id_to_timer_ref, job_run_id)}
   end
 
   @impl true
@@ -50,15 +55,7 @@ defmodule CutiepyBroker.JobRunTimer do
         %{event_type: "failed_job_run", job_run_id: job_run_id},
         job_run_id_to_timer_ref
       ) do
-    case job_run_id_to_timer_ref[job_run_id] do
-      nil ->
-        {:noreply, job_run_id_to_timer_ref}
-
-      timer_ref ->
-        Process.cancel_timer(timer_ref)
-        job_run_id_to_timer_ref = Map.delete(job_run_id_to_timer_ref, job_run_id)
-        {:noreply, job_run_id_to_timer_ref}
-    end
+    {:noreply, cancel_job_run_timer(job_run_id_to_timer_ref, job_run_id)}
   end
 
   @impl true
@@ -68,7 +65,14 @@ defmodule CutiepyBroker.JobRunTimer do
     {:noreply, job_run_id_to_timer_ref}
   end
 
-  def start_link(init_arg) do
-    GenServer.start_link(__MODULE__, init_arg)
+  defp cancel_job_run_timer(job_run_id_to_timer_ref, job_run_id) do
+    case job_run_id_to_timer_ref[job_run_id] do
+      nil ->
+        job_run_id_to_timer_ref
+
+      timer_ref ->
+        Process.cancel_timer(timer_ref)
+        Map.delete(job_run_id_to_timer_ref, job_run_id)
+    end
   end
 end
