@@ -7,7 +7,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 /** @type {import("@docusaurus/types").Config} */
 const config = {
   title: "CutiePy",
-  tagline: "A distributed task queue for running background jobs",
+  tagline: "A batteries-included job queue for Python",
   url: "https://cutiepy.org",
   baseUrl: "/",
   onBrokenLinks: "throw",
@@ -16,7 +16,7 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren"t using GitHub pages, you don"t need these.
-  organizationName: "cutiepy", // Usually your GitHub org/user name.
+  organizationName: "cutiepylabs", // Usually your GitHub org/user name.
   projectName: "cutiepy", // Usually your repo name.
 
   // Even if you don"t use internalization, you can use this field to set useful
@@ -37,14 +37,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+            "https://github.com/cutiepylabs/cutiepy/tree/main/cutiepy_website/",
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+            "https://github.com/cutiepylabs/cutiepy/tree/main/cutiepy_website/",
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -65,25 +65,13 @@ const config = {
         items: [
           {
             type: "doc",
-            docId: "quickstart",
+            docId: "index",
             position: "left",
-            label: "Quickstart",
-          },
-          {
-            type: "doc",
-            docId: "/category/tutorial---basics",
-            position: "left",
-            label: "Tutorial",
+            label: "Documentation",
           },
           { to: "/blog", label: "Blog", position: "left" },
           {
-            type: "doc",
-            docId: "index",
-            position: "right",
-            label: "Documentation",
-          },
-          {
-            href: "https://github.com/facebook/docusaurus",
+            href: "https://github.com/cutiepylabs/cutiepy",
             label: "GitHub",
             position: "right",
           },
@@ -100,8 +88,20 @@ const config = {
                 to: "/docs",
               },
               {
-                label: "Quickstart",
+                label: "Quickstart Guide",
                 to: "/docs/quickstart",
+              },
+              {
+                label: "Tutorial",
+                to: "/docs/tutorial",
+              },
+              {
+                label: "Explanations",
+                to: "/docs/explanations",
+              },
+              {
+                label: "API Reference",
+                to: "/docs/reference",
               },
             ],
           },
@@ -110,7 +110,7 @@ const config = {
             items: [
               {
                 label: "GitHub Discussions",
-                href: "#",
+                to: "https://github.com/cutiepylabs/cutiepy/discussions"
               },
               {
                 label: "Slack",
@@ -136,7 +136,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Bobby Chen. CutiePy is licensed under the MIT License.`,
+        copyright: `Copyright © ${new Date().getFullYear()} CutiePy Labs`,
       },
       prism: {
         theme: lightCodeTheme,

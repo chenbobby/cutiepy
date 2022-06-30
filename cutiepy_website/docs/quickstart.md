@@ -1,29 +1,42 @@
 ---
 sidebar_position: 2
+title: "Quickstart"
 ---
-
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 # Quickstart
 
-This page will teach you how to install CutiePy, define a task, and run it with a background worker.
+Welcome to the Quickstart guide. This page will teach you how to:
 
-## Installation
+1. [**Install CutiePy**](#1-install-cutiepy)
+1. Register your Python function with CutiePy.
+1. Start a broker server.
+1. Enqueue your Python function as a job.
+1. Run your job with a background worker.
+1. View the output of your job with the CutiePy UI.
 
-First, make sure that you have Python installed. CutiePy works with Python 3.5+
+This Quickstart guide is beginner-friendly.
+Before you start, you should at least be comfortable with writing Python code and using the your terminal to run shell commands.
 
-Next, install `cutiepy` using `pip`, `conda`, or your Python package manager of choice.
+Let's get started!
+
+## 1. Install CutiePy
+
+First, make sure that you have Python installed.
+CutiePy works with Python 3.7+.
+
+Next, install the `cutiepy` package from PyPI by using `pip`, `conda`, or your Python package manager of choice.
 
 <Tabs>
-  <TabItem value="pip" label="pip" default>
+  <TabItem value="pip" label="Use pip" default>
 
 ```sh title="Terminal"
 pip install cutiepy
 ```
 
   </TabItem>
-  <TabItem value="conda" label="conda">
+  <TabItem value="conda" label="Use conda">
 
 ```sh title="Terminal"
 conda install cutiepy
@@ -34,36 +47,90 @@ conda install cutiepy
 
 You are now ready to use CutiePy!
 
-## 1. Create a task
+## 2. Register your Python function with CutiePy
 
-The first step is to write a function and turn it into a **task**. Tasks are functions that CutiePy can run in the background.
+After installing CutiePy, the next step is to write a Python function and register your function in a CutiePy [**Registry**](#TODO-registry-explanation).
 
-Open your code editor and create a new file called `cutie.py`. In your file, define a task that you want to run in the background. Copy the this code into your file:
+A Registry stores information any Python function that you want to run as a CutiePy [**Job**](#TODO-job-explanation).
+The Registry will pass this information along to a CutiePy [**Worker**](#TODO-worker-explanation) so that they can run your Job in the background.
+You will learn more about Jobs and Workers in the later parts of this Quickstart guide.
+
+First, open your code editor and create a new Python file called `cutie.py`.
+
+Second, in your Python file, create a Registry object by calling `cutiepy.Registry()`.
+In the example below, our Registry object is named `registry`.
+
+Third, define a function that you want to run in the background, and use the `@registry.job` decorator to register your function in the Registry.
+In the example below, our function is named `bake_a_pie`.
 
 ```python title="cutie.py"
+import cutiepy
 import time
-from cutiepy import CutiePy
 
-cutie = CutiePy(mode="dev")
+registry = cutiepy.Registry()
 
-@cutie.task
+@registry.job
 def bake_a_pie(flavor, recipient):
-    time.sleep(3)
-    print(f"Your {flavor} pie for {recipient} is ready!")
+    time.sleep(5)
+    message = f"Your {flavor} pie for {recipient} is ready!"
+    print(message)
+    return message
 
 ```
 
-This file contains an instance of CutiePy called `cutie` that is optimized for local development.
-
-The `@cutie.task` is a _function decorator_ that turns the function into a CutiePy task. Now, `bake_a_pie` is both a function _and_ a CutiePy task. You can run it just like any old function, but it will take 3 seconds to run because it runs in the _foreground_.
+The `@registry.job` is a [_function decorator_](https://www.geeksforgeeks.org/decorators-in-python/) that will register the function `bake_a_pie` in your Registry named `registry`.
+After registering your function, you can still run it like any old Python function.
 
 ```python title="In a Python program"
 >>> bake_a_pie("apple", "Alice")
-# Waits for 3 seconds...
+# Sleeps 5 seconds...
 "Your apple pie for Alice is ready!"
 ```
 
-In the next steps, you will learn to run the task `bake_a_pie` in the background. Learn more about [tasks](#) in our documentation.
+Our function `bake_a_pie` takes at least 5 seconds to run in the _foreground_.
+In the next few steps, you will learn how to run your function in the _background_!
+
+## 3. Start a broker server
+
+After you define a function and register it in your Registry, the next step is to start a CutiePy [**Broker**](#TODO-broker-explanation).
+
+A Broker is a server that accepts Jobs, stores your Jobs in a queue, and distributes your Jobs to Workers.
+After a Worker runs your Job, the result of your Job will be returned to the Broker so you can access it later if you want to.
+
+To start a Broker server, open a terminal and run the command `cutiepy broker`.
+
+```shell title="In your terminal"
+cutiepy broker
+```
+
+You should see the following output in your terminal:
+
+```
+[CutiePy Broker] Starting...
+[CutiePy Broker] Listening on http://localhost:9000/
+[CutiePy Broker] Open your web browser to http://localhost:9000/ to view the CutiePy UI.
+```
+
+You are now running a Broker server!
+
+By default, the Broker server will run on `http://localhost:9000/`.
+If you open your web browser to <a href="http://localhost:9000/" target="_blank">http://localhost:9000/</a>, you can view the [**CutiePy UI**](/docs/explanations/ui).
+For example, with Google Chrome, you should see something like this:
+
+![CutiePy UI](#TODO-cutiepy-ui-screenshot)
+
+The CutiePy UI provides a graphical interface for you to monitor your Jobs and Workers.
+You will not see any Jobs yet, but you will soon, after we enqueue a Job in the next step!
+
+## 4. Enqueue your Python function as a job
+
+After you define a function and register it in your Registry, the next step is to enqueue your function as a CutiePy [**Job**](#TODO-job-explanation).
+A Job represents the function that you want to run and any arguments that you want to pass into the function.
+
+A Job can also contain additional information for [timeouts](#TODO-timeout-explanation), [retries](#TODO-retry-explanation), and more.
+We will not discuss timeouts and retries in this Quickstart guide, but you can learn more about them in the [**Tutorial**](/docs/tutorial) and [**Explanations**](/docs/explanations) section of our documentation.
+
+
 
 ## 2. Start a background worker
 
