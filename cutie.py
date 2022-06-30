@@ -6,7 +6,7 @@ registry = cutiepy.Registry(broker_url="http://localhost:4000")
 
 
 @registry.job
-def add_with_a_super_long_name_999999999999999999999(x, y):
+def add_with_a_super_long_name_(x, y):
     return x + y
 
 
@@ -22,5 +22,11 @@ def fail(x, y):
 
 
 if __name__ == "__main__":
-    for _ in range(100):
-        add_with_a_super_long_name_999999999999999999999.enqueue_job(args=[1, 2])
+    add_with_a_super_long_name_.enqueue_job(
+        args=[1, "999999999999999999999999999999999999999999999999999999999999", 2],
+        kwargs={
+            "a": "hello",
+            "b": "goodbye",
+            "999999999999999999999999999999999999999999999999999999999999": "999999999999999999999999999999999999999999999999999999999999",
+        },
+    )

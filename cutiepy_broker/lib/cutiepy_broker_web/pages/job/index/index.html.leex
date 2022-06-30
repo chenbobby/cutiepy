@@ -1,93 +1,103 @@
-<div>
-	<div class="px-8 py-6">
-		<h1 class="text-2xl">Job Queue</h1>
-		<%= case @jobs do %>
-		<% [] -> %>
-			<p>No jobs yet! See the documentation on how to create new jobs for CutiePy.</p>
-		<% jobs -> %>
-			<div class="max-w-fit overflow-x-auto rounded shadow">
-				<table class="block w-fit text-sm whitespace-nowrap">
-					<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700 tracking-wide">
-						<tr>
-							<th class="min-w-full px-8 py-2">
-								<div>
-									LAST UPDATED
-								</div>
-							</th>
-							<th class="min-w-full px-8 py-2">
-								<div>
-									ID
-								</div>
-							</th>
-							<th class="max-w-72 min-w-full px-8 py-2">
-								<div>
-									NAME
-								</div>
-							</th>
-							<th class="w-40 min-w-full px-8 py-2">
-								<div>
-									STATUS
-								</div>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						<%= for job <- jobs do %>
-							<tr
-								class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer"
-								phx-click="redirect_to_job_show"
-								phx-value-job_id=<%= job.id %>
-								>
-								<td class="px-6 py-1.5">
-									<div>
-										<%= Calendar.strftime(job.updated_at, "%c:%f") %>
-									</div>
-								</td>
-								<td class="px-6 py-1.5">
-									<div class="text-xs font-mono group-hover:underline">
-										<%= String.slice(job.id, -6..-1) %>
-									</div>
-								</td>
-								<td class="px-6 py-1.5">
-									<div class="max-w-md text-xs font-mono truncate">
-										<%= job.callable_key %>
-									</div>
-								</td>
-								<td class="px-6 py-1.5">
-									<div class="text-center">
-										<%= case job.status do %>
-											<% "READY" -> %>
-												<div class="w-26 bg-sky-700 text-sky-50 rounded">
-													Ready
-												</div>
-											<% "IN_PROGRESS" -> %>
-												<div class="w-26 bg-violet-600 text-violet-50 rounded">
-													In Progress
-												</div>
-											<% "SUCCESS" -> %>
-												<div class="w-26 bg-emerald-700 text-emerald-50 rounded">
-													Success
-												</div>
-											<% "FAILED" -> %>
-												<div class="w-26 bg-red-700 text-red-50 rounded">
-													Failed
-												</div>
-											<% "CANCELED" -> %>
-												<div class="w-26 bg-slate-600 text-slate-50 rounded">
-													Canceled
-												</div>
-											<% "TIMED_OUT" -> %>
-												<div class="w-26 bg-yellow-700 text-yellow-50 rounded">
-													Timed Out
-												</div>
-										<% end %>
-									</div>
-								</td>
-							</tr>
-						<% end %>
-					</tbody>
-				</table>
-			</div>
-		<% end %>
+<div class="pt-16 px-8">
+	<div class="mb-4 px-6">
+		<h1 class="text-xl text-slate-800 font-bold">Jobs</h1>
 	</div>
+	<%= case @jobs do %>
+	<% [] -> %>
+		<p>No jobs yet! See the documentation on how to create new jobs for CutiePy.</p>
+	<% jobs -> %>
+		<div class="max-w-fit overflow-x-auto rounded shadow">
+			<table class="block w-fit text-sm whitespace-nowrap">
+				<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700 tracking-wide">
+					<tr>
+						<th class="min-w-full px-6 py-2">
+							<div>
+								QUEUE NAME
+							</div>
+						</th>
+						<th class="min-w-full px-6 py-2">
+							<div>
+								JOB ID
+							</div>
+						</th>
+						<th class="min-w-full px-6 py-2">
+							<div>
+								JOB NAME
+							</div>
+						</th>
+						<th class="min-w-full px-6 py-2">
+							<div>
+								STATUS
+							</div>
+						</th>
+						<th class="min-w-full px-6 py-2">
+							<div>
+								LAST UPDATED
+							</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%= for job <- jobs do %>
+						<tr
+							class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer"
+							phx-click="redirect_to_job_show"
+							phx-value-job_id=<%= job.id %>
+							>
+							<td class="px-6 py-1.5">
+								<div class="text-xs font-mono">
+									default
+								</div>
+							</td>
+							<td class="px-6 py-1.5">
+								<div class="text-xs font-mono group-hover:underline">
+									<%= String.slice(job.id, -6..-1) %>
+								</div>
+							</td>
+							<td class="px-6 py-1.5">
+								<div class="max-w-md text-xs font-mono truncate">
+									<%= job.callable_key %>
+								</div>
+							</td>
+							<td class="px-6 py-1.5">
+								<div class="text-center">
+									<%= case job.status do %>
+										<% "READY" -> %>
+											<div class="w-32 bg-sky-700 text-sky-50 rounded">
+												Ready
+											</div>
+										<% "IN_PROGRESS" -> %>
+											<div class="w-32 bg-violet-600 text-violet-50 rounded">
+												In Progress
+											</div>
+										<% "SUCCESS" -> %>
+											<div class="w-32 bg-emerald-700 text-emerald-50 rounded">
+												Success
+											</div>
+										<% "FAILED" -> %>
+											<div class="w-32 bg-red-700 text-red-50 rounded">
+												Failed
+											</div>
+										<% "CANCELED" -> %>
+											<div class="w-32 bg-slate-600 text-slate-50 rounded">
+												Canceled
+											</div>
+										<% "TIMED_OUT" -> %>
+											<div class="w-32 bg-yellow-700 text-yellow-50 rounded">
+												Timed Out
+											</div>
+									<% end %>
+								</div>
+							</td>
+							<td class="px-6 py-1.5">
+								<div>
+									<%= Calendar.strftime(job.updated_at, "%c:%f") %>
+								</div>
+							</td>
+						</tr>
+					<% end %>
+				</tbody>
+			</table>
+		</div>
+	<% end %>
 </div>
