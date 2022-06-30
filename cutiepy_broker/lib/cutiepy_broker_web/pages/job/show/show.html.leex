@@ -1,148 +1,279 @@
 <div class="pt-16 px-8">
 	<%= case @job do %>
-	<% nil -> %>
-		<div class="mb-4 px-6">
-			<h1 class="text-xl text-slate-800 font-bold">Job not found</h1>
-			<%= live_redirect "View all jobs", to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Index) %>
-		</div>
-	<% job -> %>
-		<div>
+		<% nil -> %>
 			<div>
-				<span>Job ID</span>
-				<input
-					class="w-96 p-0 border-0 font-mono focus:border-0 focus:ring-0"
-					onClick="this.select();"
-					type="text"
-					value=<%=job.id %>
-					/>
-			</div>
-			<div class="mb-3">
-				<h1 class="text-2xl text-slate-800 font-bold"><%= job.callable_key %></h1>
-			</div>
-			<div class="mb-8">
-				<%= case job.status do %>
-					<% "READY" -> %>
-						<div class="w-28 px-3 py-0.5 bg-sky-700 text-center text-sky-50 rounded-full">
-							Ready
-						</div>
-					<% "IN_PROGRESS" -> %>
-						<div class="w-28 px-3 py-0.5 bg-violet-600 text-center text-violet-50 rounded-full">
-							In Progress
-						</div>
-					<% "SUCCESS" -> %>
-						<div class="w-28 px-3 py-0.5 bg-emerald-700 text-center text-emerald-50 rounded-full">
-							Success
-						</div>
-					<% "FAILED" -> %>
-						<div class="w-28 px-3 py-0.5 bg-red-700 text-center text-red-50 rounded-full">
-							Failed
-						</div>
-					<% "CANCELED" -> %>
-						<div class="w-28 px-3 py-0.5 bg-slate-600 text-center text-slate-50 rounded-full">
-							Canceled
-						</div>
-					<% "TIMED_OUT" -> %>
-						<div class="w-28 px-3 py-0.5 bg-yellow-700 text-center text-yellow-50 rounded-full">
-							Timed Out
-						</div>
-				<% end %>
-			</div>
-			<div class="mb-8">
-				<div class="mb-2">
-					<h2 class="text-lg text-slate-800 font-bold">Positional Arguments</h2>
+				<div>
+					<h1 class="text-2xl text-slate-800 font-bold">Job not found</h1>
 				</div>
-				<div class="max-w-fit overflow-x-auto rounded shadow">
-					<table class="block w-fit whitespace-nowrap">
-						<thead class="bg-slate-200 border-b-2 border-slate-300 text-slate-700 tracking-wide">
-							<tr>
-								<th class="min-w-full px-6 py-1.5">
-									<div class="text-right">
-										Position
-									</div>
-								</th>
-								<th class="min-w-full px-6 py-1.5">
-									<div class="text-left">
-										Value
-									</div>
-								</th>
-							</tr>
-						</thead>
-						<tbody class="text-sm font-mono">
-							<%= for {arg_repr, index} <- Enum.with_index(job.args_repr) do %>
-								<tr
-									class="odd:bg-white even:bg-slate-100"
-									>
-									<td class="px-6 py-1.5">
+				<div class="underline hover:text-blue-800">
+					<%= live_redirect "Go back to all jobs", to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Index) %>
+				</div>
+			</div>
+		<% job -> %>
+			<div>
+				<div>
+					<span>Job ID</span>
+					<input
+						class="w-96 p-0 border-0 font-mono focus:border-0 focus:ring-0"
+						onClick="this.select();"
+						type="text"
+						value=<%=job.id %>
+						/>
+				</div>
+				<div class="mb-3">
+					<h1 class="text-2xl text-slate-800 font-bold"><%= job.callable_key %></h1>
+				</div>
+				<div class="mb-8">
+					<%= case job.status do %>
+						<% "READY" -> %>
+							<div class="w-28 px-3 py-0.5 bg-sky-700 text-center text-sky-50 rounded-full">
+								Ready
+							</div>
+						<% "IN_PROGRESS" -> %>
+							<div class="w-28 px-3 py-0.5 bg-violet-600 text-center text-violet-50 rounded-full">
+								In Progress
+							</div>
+						<% "SUCCESS" -> %>
+							<div class="w-28 px-3 py-0.5 bg-emerald-700 text-center text-emerald-50 rounded-full">
+								Success
+							</div>
+						<% "FAILED" -> %>
+							<div class="w-28 px-3 py-0.5 bg-red-700 text-center text-red-50 rounded-full">
+								Failed
+							</div>
+						<% "CANCELED" -> %>
+							<div class="w-28 px-3 py-0.5 bg-slate-600 text-center text-slate-50 rounded-full">
+								Canceled
+							</div>
+						<% "TIMED_OUT" -> %>
+							<div class="w-28 px-3 py-0.5 bg-yellow-700 text-center text-yellow-50 rounded-full">
+								Timed Out
+							</div>
+					<% end %>
+				</div>
+				<div class="mb-8">
+					<div class="mb-2">
+						<h2 class="text-lg text-slate-800 font-bold">Positional Arguments</h2>
+					</div>
+					<div class="max-w-fit overflow-x-auto rounded shadow">
+						<table class="block w-fit text-sm whitespace-nowrap">
+							<thead class="bg-slate-200 border-b-2 border-slate-300 text-slate-700">
+								<tr>
+									<th class="min-w-full px-6 py-1.5">
 										<div class="text-right">
-											<%= index %>
+											POSITION
 										</div>
-									</td>
-									<td class="px-6 py-1.5">
-										<div>
-											<%= arg_repr %>
+									</th>
+									<th class="min-w-full px-6 py-1.5">
+										<div class="text-left">
+											VALUE
 										</div>
-									</td>
+									</th>
 								</tr>
-							<% end %>
-						</tbody>
-					</table>
+							</thead>
+							<tbody class="text-xs font-mono">
+								<%= for {arg_repr, index} <- Enum.with_index(job.args_repr) do %>
+									<tr
+										class="odd:bg-white even:bg-slate-100"
+										>
+										<td class="px-6 py-1.5">
+											<div class="text-right">
+												<%= index %>
+											</div>
+										</td>
+										<td class="px-6 py-1.5">
+											<div>
+												<%= arg_repr %>
+											</div>
+										</td>
+									</tr>
+								<% end %>
+							</tbody>
+						</table>
+					</div>
 				</div>
-			</div>
-			<div class="mb-8">
-				<div class="mb-2">
-					<h2 class="text-lg text-slate-800 font-bold">Keyword Arguments</h2>
-				</div>
-				<div class="max-w-fit overflow-x-auto rounded shadow">
-					<table class="block w-fit whitespace-nowrap">
-						<thead class="bg-slate-200 border-b-2 border-slate-300 text-slate-700 tracking-wide">
-							<tr>
-								<th class="min-w-full px-6 py-1.5">
-									<div class="text-right">
-										Key
-									</div>
-								</th>
-								<th class="min-w-full px-6 py-1.5">
-									<div class="text-left">
-										Value
-									</div>
-								</th>
-							</tr>
-						</thead>
-						<tbody class="text-sm font-mono">
-							<%= for {kwarg_key, kwarg_value} <- job.kwargs_repr do %>
-								<tr
-									class="odd:bg-white even:bg-slate-100"
-									>
-									<td class="px-6 py-1.5">
+				<div class="mb-8">
+					<div class="mb-2">
+						<h2 class="text-lg text-slate-800 font-bold">Keyword Arguments</h2>
+					</div>
+					<div class="max-w-fit overflow-x-auto rounded shadow">
+						<table class="block w-fit text-sm whitespace-nowrap">
+							<thead class="bg-slate-200 border-b-2 border-slate-300 text-slate-700">
+								<tr>
+									<th class="min-w-full px-6 py-1.5">
 										<div class="text-right">
-											<%= kwarg_key %>
+											KEY
 										</div>
-									</td>
-									<td class="px-6 py-1.5">
-										<div>
-											<%= kwarg_value %>
+									</th>
+									<th class="min-w-full px-6 py-1.5">
+										<div class="text-left">
+											VALUE
 										</div>
-									</td>
+									</th>
 								</tr>
-							<% end %>
-						</tbody>
-					</table>
+							</thead>
+							<tbody class="text-xs font-mono">
+								<%= for {kwarg_key, kwarg_value} <- job.kwargs_repr do %>
+									<tr
+										class="odd:bg-white even:bg-slate-100"
+										>
+										<td class="px-6 py-1.5">
+											<div class="text-right">
+												<%= kwarg_key %>
+											</div>
+										</td>
+										<td class="px-6 py-1.5">
+											<div>
+												<%= kwarg_value %>
+											</div>
+										</td>
+									</tr>
+								<% end %>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="mb-8">
+					<div class="mb-2">
+						<h2 class="text-lg text-slate-800 font-bold">Job Runs</h2>
+					</div>
+					<%= case @job_runs do %>
+						<% [] -> %>
+							<div>
+								<p>No job runs yet! See the documentation on how to start workers to run this job.<p>
+							</div>
+						<% job_runs -> %>
+							<div class="max-w-fit overflow-x-auto rounded shadow">
+								<table class="block w-fit text-sm whitespace-nowrap">
+									<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
+										<tr>
+											<th class="min-w-full px-6 py-2">
+												<div>
+													JOB RUN ID
+												</div>
+											</th>
+											<th class="min-w-full px-6 py-2">
+												<div>
+													STATUS
+												</div>
+											</th>
+											<th class="min-w-full px-6 py-2">
+												<div>
+													OUTPUT
+												</div>
+											</th>
+											<th class="min-w-full px-6 py-2">
+												<div>
+													LAST UPDATED
+												</div>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<%= for job_run <- job_runs do %>
+											<tr
+												class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer"
+												phx-click="redirect_to_job_run_show"
+												phx-value-job_run_id=<%= job_run.id %>
+												>
+												<td class="px-6 py-1.5">
+													<div class="text-xs font-mono group-hover:underline">
+														<%= String.slice(job_run.id, -6..-1) %>
+													</div>
+												</td>
+												<td class="px-6 py-1.5">
+													<div class="text-center">
+														<%= case job_run.status do %>
+															<% "IN_PROGRESS" -> %>
+																<div class="w-32 bg-violet-600 text-violet-50 rounded">
+																	In Progress
+																</div>
+															<% "SUCCESS" -> %>
+																<div class="w-32 bg-emerald-700 text-emerald-50 rounded">
+																	Success
+																</div>
+															<% "FAILED" -> %>
+																<div class="w-32 bg-red-700 text-red-50 rounded">
+																	Failed
+																</div>
+															<% "CANCELED" -> %>
+																<div class="w-32 bg-slate-600 text-slate-50 rounded">
+																	Canceled
+																</div>
+															<% "TIMED_OUT" -> %>
+																<div class="w-32 bg-yellow-700 text-yellow-50 rounded">
+																	Timed Out
+																</div>
+														<% end %>
+													</div>
+												</td>
+												<td class="px-6 py-1.5">
+													<div>
+														Output
+													</div>
+												</td>
+												<td class="px-6 py-1.5">
+													<div>
+														<%= Calendar.strftime(job.updated_at, "%c:%f") %>
+													</div>
+												</td>
+											</tr>
+										<% end %>
+									</tbody>
+								</table>
+							</div>
+					<% end %>
+				</div>
+				<div class="mb-8">
+					<div class="mb-2">
+						<h2 class="text-lg text-slate-800 font-bold">Events</h2>
+					</div>
+					<%= case @events do %>
+						<% [] -> %>
+							<div>
+								<p>No events yet!<p>
+							</div>
+						<% events -> %>
+							<div class="max-w-fit overflow-x-auto rounded shadow">
+								<table class="block w-fit text-sm whitespace-nowrap">
+									<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
+										<tr>
+											<th class="min-w-full px-6 py-2">
+												<div>
+													EVENT ID
+												</div>
+											</th>
+											<th class="min-w-full px-6 py-2">
+												<div>
+													EVENT DATA
+												</div>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										<%= for event <- events do %>
+											<tr
+												class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer"
+												phx-click="redirect_to_event_show"
+												phx-value-job_run_id=<%= event.id %>
+												>
+												<td class="px-6 py-1.5">
+													<div class="text-xs font-mono group-hover:underline">
+														<%= String.slice(event.id, -6..-1) %>
+													</div>
+												</td>
+												<td class="px-6 py-1.5">
+													<div>
+														<%= inspect event.data %>
+													</div>
+												</td>
+											</tr>
+										<% end %>
+									</tbody>
+								</table>
+							</div>
+					<% end %>
 				</div>
 			</div>
-			<div class="mb-8">
-				<div class="mb-2">
-					<h2 class="text-lg text-slate-800 font-bold">Job Runs</h2>
-				</div>
-			</div>
-		</div>
-		<%= case @job_runs do %>
-		<% [] -> %>
-			<p>No job runs yet.<p>
-		<% job_runs -> %>
-			<h2>Job Runs</h2>
-			<%= for job_run <- job_runs do %>
-				<p><%= "#{job_run.updated_at} - #{job_run.id} - #{job_run.status}" %>
-			<% end %>
-		<% end %>
 	<% end %>
 </div>

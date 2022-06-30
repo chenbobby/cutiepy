@@ -2,6 +2,14 @@ defmodule CutiepyBroker.Queries do
   @moduledoc false
   import Ecto.Query
 
+  def events(%{job_id: job_id}) do
+    CutiepyBroker.Repo.all(
+      from event in CutiepyBroker.Event,
+        where: event.data["job_id"] == ^job_id,
+        select: event
+    )
+  end
+
   def job(%{job_id: job_id}) do
     CutiepyBroker.Repo.one(
       from job in CutiepyBroker.Job,

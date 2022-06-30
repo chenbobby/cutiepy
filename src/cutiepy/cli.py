@@ -63,14 +63,38 @@ def worker_command(broker_url: str) -> NoReturn:
         print("Assigned a job!")
 
         response_body = response.json()
+
+        exception = None
         job_run_id = response_body["job_run_id"]
         callable_key = response_body["job_callable_key"]
+        if callable_key not in registry:
+            print(f"Error: Callable key {callable_key} is not in registry.")
+            exception = RuntimeError(
+                f"Callable key {callable_key} is not in the CutiePy registry."
+            )
+            response = requests.post(
+                url=f"{broker_url}/api/fail_job_run",
+                json={
+                    "job_run_id": job_run_id,
+                    "job_run_exception_serialized": serialize(exception),
+                    "job_run_exception_repr": repr(exception),
+                    "worker_id": worker_id,
+                },
+            )
+            if response.status_code == requests.codes.CONFLICT:
+                response_body = response.json()
+                error = response_body["error"]
+                print(f"Unable to fail the job run: {error}")
+                continue
+
+            assert response.ok
+            continue
+
         callable_ = registry[callable_key]
         args = deserialize(response_body["job_args_serialized"])
         kwargs = deserialize(response_body["job_kwargs_serialized"])
 
         result = None
-        exception = None
         try:
             result = callable_(*args, **kwargs)
         except Exception as e:
