@@ -9,7 +9,7 @@ defmodule CutiepyBrokerWeb.Job.Index do
 
   def handle_info(%{event_type: "enqueued_job"}, socket) do
     jobs = CutiepyBroker.Queries.jobs()
-    {:noreply, assign(socket, jobs: Enum.jobs())}
+    {:noreply, assign(socket, jobs: jobs)}
   end
 
   def handle_event("redirect_to_job_show", %{"job_id" => job_id}, socket) do
