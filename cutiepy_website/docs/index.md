@@ -2,6 +2,7 @@
 sidebar_position: 1
 title: "Home"
 ---
+import Link from '@docusaurus/Link';
 
 # Documentation
 
@@ -13,72 +14,72 @@ This is a collection of resources to help you get started with CutiePy.
 Here are some high-level resources to help you learn more about CutiePy.
 
 <p>
-    <a
-        href="/docs/quickstart"
+    <Link
+        to="/docs/quickstart"
         style={{"font-size": "1.25rem", "font-weight": "bold"}}
         >
         Quickstart
-    </a>
+    </Link>
     <br/>
     <span style={{"font-style": "italic"}}>
         Install and run CutiePy in 5 minutes
     </span>
 </p>
 <p>
-    <a
-        href="/docs/tutorial"
+    <Link
+        to="/docs/tutorial"
         style={{"font-size": "1.25rem", "font-weight": "bold"}}
         >
         Tutorial
-    </a>
+    </Link>
     <br/>
     <span style={{"font-style": "italic"}}>
         Build an X with CutiePy
     </span>
 </p>
 <p>
-    <a
-        href="/docs/how-to"
+    <Link
+        to="/docs/how-to"
         style={{"font-size": "1.25rem", "font-weight": "bold"}}
         >
         How-To Guides
-    </a>
+    </Link>
     <br/>
     <span style={{"font-style": "italic"}}>
         Learn how to use CutiePy for web apps, cron jobs, ML experiments, and more
     </span>
 </p>
 <p>
-    <a
-        href="/docs/explanations"
+    <Link
+        to="/docs/explanations"
         style={{"font-size": "1.25rem", "font-weight": "bold"}}
         >
         Explanations
-    </a>
+    </Link>
     <br/>
     <span style={{"font-style": "italic"}}>
         Read about CutiePy's architecture
     </span>
 </p>
 <p>
-    <a
-        href="/docs/reference"
+    <Link
+        to="/docs/reference"
         style={{"font-size": "1.25rem", "font-weight": "bold"}}
         >
         API Reference
-    </a>
+    </Link>
     <br/>
     <span style={{"font-style": "italic"}}>
         User manual for the CutiePy library, <code style={{"font-style": "normal"}}>cutiepy</code> commands, and configuration options
     </span>
 </p>
 <p>
-    <a
-        href="#"
+    <Link
+        to="#"
         style={{"font-size": "1.25rem", "font-weight": "bold"}}
         >
         Deployment Checklist
-    </a>
+    </Link>
     <br/>
     <span style={{"font-style": "italic"}}>
         Security and performance considerations for production environments

@@ -72,9 +72,10 @@ const config = {
           { to: "/blog", label: "Blog", position: "left" },
           {
             href: "https://github.com/cutiepylabs/cutiepy",
-            label: "GitHub",
+            label: "Source Code",
             position: "right",
           },
+          { to: "/about", label: "About", position: "right" },
         ],
       },
       footer: {
@@ -123,14 +124,18 @@ const config = {
             ],
           },
           {
-            title: "More",
+            title: "Learn More",
             items: [
               {
                 label: "Blog",
                 to: "/blog",
               },
               {
-                label: "GitHub",
+                label: "About",
+                to: "/about",
+              },
+              {
+                label: "Source Code",
                 href: "https://github.com/cutiepy/cutiepy",
               },
             ],
