@@ -82,6 +82,17 @@ defmodule CutiepyBroker.Commands do
 
   defp dispatch_assign_job_run(%{worker_id: worker_id}) do
     CutiepyBroker.Repo.transaction(fn ->
+      worker =
+        CutiepyBroker.Repo.one(
+          from worker in CutiepyBroker.Worker,
+            where: worker.id == ^worker_id,
+            select: worker
+        )
+
+      if is_nil(worker) do
+        CutiepyBroker.Repo.rollback(:worker_not_found)
+      end
+
       job =
         CutiepyBroker.Repo.one(
           from job in CutiepyBroker.Job,

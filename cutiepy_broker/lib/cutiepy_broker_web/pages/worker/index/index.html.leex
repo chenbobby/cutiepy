@@ -1,0 +1,44 @@
+<div class="pt-16 px-8">
+	<div class="mb-4 px-6">
+		<h1 class="text-xl text-slate-800 font-bold">Workers</h1>
+	</div>
+	<%= case @workers do %>
+	<% [] -> %>
+		<p>No workers yet! See the documentation on how to create new jobs for CutiePy.</p>
+	<% workers -> %>
+		<div class="max-w-fit overflow-x-auto rounded shadow">
+			<table class="block w-fit text-sm whitespace-nowrap">
+				<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
+					<tr>
+						<th class="min-w-full px-6 py-2">
+							<div>
+								ID
+							</div>
+						</th>
+						<th class="min-w-full px-6 py-2">
+							<div>
+								LAST UPDATED
+							</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%= for worker <- workers do %>
+						<tr class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer">
+							<td class="px-6 py-1.5">
+								<div class="text-xs font-mono group-hover:underline">
+									<%= String.slice(worker.id, -6..-1) %>
+								</div>
+							</td>
+							<td class="px-6 py-1.5">
+								<div>
+									<%= Calendar.strftime(worker.updated_at, "%c:%f") %>
+								</div>
+							</td>
+						</tr>
+					<% end %>
+				</tbody>
+			</table>
+		</div>
+	<% end %>
+</div>

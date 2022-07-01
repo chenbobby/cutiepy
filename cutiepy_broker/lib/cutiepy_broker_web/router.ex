@@ -19,6 +19,7 @@ defmodule CutiepyBrokerWeb.Router do
 
     live "/jobs", Job.Index
     live "/jobs/:job_id", Job.Show
+    live "/workers", Worker.Index
   end
 
   scope "/api", CutiepyBrokerWeb do

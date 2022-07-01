@@ -41,7 +41,17 @@ defmodule CutiepyBroker.Queries do
     CutiepyBroker.Repo.all(
       from job_run in CutiepyBroker.JobRun,
         where: job_run.job_id == ^job_id,
+        order_by: [desc: job_run.updated_at],
         select: job_run
+    )
+  end
+
+  def workers do
+    CutiepyBroker.Repo.all(
+      from worker in CutiepyBroker.Worker,
+        limit: 20,
+        order_by: [desc: worker.updated_at],
+        select: worker
     )
   end
 end

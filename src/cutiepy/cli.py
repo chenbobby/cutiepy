@@ -2,7 +2,6 @@ import importlib
 import pathlib
 import subprocess
 import time
-import uuid
 from typing import NoReturn, Optional
 
 import click
