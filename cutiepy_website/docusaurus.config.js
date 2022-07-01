@@ -10,9 +10,10 @@ const config = {
   tagline: "A batteries-included job queue for Python",
   url: "https://cutiepy.org",
   baseUrl: "/",
+  favicon: "img/favicon.ico",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
-  favicon: "img/favicon.ico",
+  trailingSlash: false,
 
   // GitHub pages deployment config.
   // If you aren"t using GitHub pages, you don"t need these.

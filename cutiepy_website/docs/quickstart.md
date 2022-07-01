@@ -139,7 +139,7 @@ After you run the command above, you should see the following output in your ter
 You are now running a Broker server!
 
 By default, the Broker server will run on `http://localhost:9000`.
-If you open your web browser to <Link to="http://localhost:9000">http://localhost:9000</Link>, you can view the [**CutiePy UI**](/docs/explanations/ui).
+If you open your web browser to <Link to="http://localhost:9000">http://localhost:9000</Link>, you can view the [**CutiePy UI**](#TODO-explanations-ui).
 For example, you should see something like this:
 
 ![CutiePy UI](#TODO-cutiepy-ui-screenshot)
