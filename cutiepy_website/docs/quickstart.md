@@ -19,7 +19,7 @@ Welcome to the CutiePy Quickstart guide. This page will teach you how to:
 This Quickstart guide is beginner-friendly.
 Before you begin, you should at least be comfortable with writing Python code and using the your terminal to run shell commands.
 
-All the code examples in this quickstart guide are publicly available in the GitHub repository [**cutiepylabs/cutiepy-quickstart-guide**](https://github.com/cutiepylabs/cutiepy-quickstart-guide).
+All the code examples in this quickstart guide are publicly available in the GitHub repository [**chenbobby/cutiepy-quickstart-guide**](https://github.com/chenbobby/cutiepy-quickstart-guide).
 
 Let's get started!
 
@@ -33,14 +33,14 @@ Next, install the `cutiepy` and `cutiepy-cli` package from PyPI by using `pip`, 
 <Tabs>
   <TabItem value="pip" label="Use pip" default>
 
-```sh title="In your terminal"
+``` console title="In your terminal"
 pip install cutiepy cutiepy-cli
 ```
 
   </TabItem>
   <TabItem value="conda" label="Use conda">
 
-```sh title="Terminal"
+``` console title="In your terminal"
 conda install cutiepy cutiepy-cli
 ```
 
@@ -83,7 +83,7 @@ In the example below, our function is named `bake_a_pie`.
 
 After completing these steps, your Python file should look something like this.
 
-```python title="cutie.py"
+``` python title="cutie.py"
 import cutiepy
 import time
 
@@ -124,13 +124,13 @@ You will learn more about Jobs and Workers in the later parts of this Quickstart
 
 To start a Broker server, open a new terminal and run the command `cutiepy-cli broker`.
 
-```shell title="In your terminal"
+``` console title="In your terminal"
 cutiepy-cli broker
 ```
 
 After you run the command above, you should see the following output in your terminal:
 
-```
+``` console
 [CutiePy Broker] Starting...
 [CutiePy Broker] Listening on http://localhost:9000
 [CutiePy Broker] Open your web browser to http://localhost:9000 to view the CutiePy UI.
@@ -161,7 +161,7 @@ We will not discuss timeouts and retries in this Quickstart guide, but you can l
 
 To enqueue your function as a Job, use the `.enqueue_job(...)` method. This method was added to your function when you registered your function in your Registry with the `@registry.job` decorator. In the example below, we enqueue a job to run our function `bake_a_pie` with the arguments `"apple"` and `"Alice"`.
 
-```python title="cutie.py"
+``` python title="cutie.py"
 import cutiepy
 import time
 
@@ -208,13 +208,13 @@ After a Worker has completed a Job, it will continue to ask the Broker for more 
 To start a Worker, use a new terminal (a different terminal than the one that is running your Broker) to run the command `cutiepy-cli worker`.
 
 
-```shell title="In your terminal"
+``` console title="In your terminal"
 cutiepy-cli worker
 ```
 
 After you run the command above, you should see the following output in your terminal:
 
-```
+``` console
 [CutiePy Worker] Starting...
 [CutiePy Worker] Worker has connected to the Broker at http://localhost:9000.
 [CutiePy Worker] My Worker ID is 12341234-1234-1234-1234-123412341234
@@ -241,7 +241,7 @@ If you click the row with your Job, you can view more details about the Job and 
 
 Congratulations! You have completed the CutiePy quickstart guide.
 
-All the code examples in this quickstart guide are publicly available in the GitHub repository<br/>[`cutiepylabs/cutiepy-quickstart-guide`](https://github.com/cutiepylabs/cutiepy-quickstart-guide).
+All the code examples in this quickstart guide are publicly available in the GitHub repository<br/>[`chenbobby/cutiepy-quickstart-guide`](https://github.com/chenbobby/cutiepy-quickstart-guide).
 
 This quickstart guide only scratches the surface of CutiePy's features.
 You can also use CutiePy to create:
@@ -257,8 +257,8 @@ Learn how to build and deploy applications in our [**How-To Guides**](#).
 
 ### Community and Support
 
-If you have any questions or problems, please [start a discussion](https://github.com/cutiepylabs/cutiepy/discussions) or [open an issue](https://github.com/cutiepylabs/cutiepy/issues) on GitHub.
+If you have any questions or problems, please [start a discussion](https://github.com/chenbobby/cutiepy/discussions) or [open an issue](https://github.com/chenbobby/cutiepy/issues) on GitHub.
 
 You can also join our [CutiePy Slack community](#) for faster support.
 
-The source code for CutiePy is publicly available in the GitHub repository [**cutiepylabs/cutiepy**](https://github.com/cutiepylabs/cutiepy).
+The source code for CutiePy is publicly available in the GitHub repository [**chenbobby/cutiepy**](https://github.com/chenbobby/cutiepy).

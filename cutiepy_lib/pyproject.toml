@@ -4,24 +4,21 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cutiepy"
-version = "0.1.0"
+version = "0.0.1"
 authors = [
-  { name="Bobby Chen", email="chenbobby@cutiepy.org" },
+  { name="Bobby Chen", email="chenbobby@fastmail.com" },
 ]
 description = "CutiePy is a batteries-included job queue for Python."
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/cutebakery/cutiepy"
-"Bug Tracker" = "https://github.com/cutebakery/cutiepy/issues"
+"Homepage" = "https://cutiepy.org"
+"Bug Tracker" = "https://github.com/chenbobby/cutiepy/issues"
 
 [tool.hatch.build]
-artifacts = [
-  "cutiepy_broker/_build/prod/rel/cutiepy_broker",
-]

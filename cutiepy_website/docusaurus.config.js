@@ -16,7 +16,7 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren"t using GitHub pages, you don"t need these.
-  organizationName: "cutiepylabs", // Usually your GitHub org/user name.
+  organizationName: "chenbobby", // Usually your GitHub org/user name.
   projectName: "cutiepy", // Usually your repo name.
 
   // Even if you don"t use internalization, you can use this field to set useful
@@ -37,14 +37,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/cutiepylabs/cutiepy/tree/main/cutiepy_website/",
+            "https://github.com/chenbobby/cutiepy/tree/main/cutiepy_website/",
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            "https://github.com/cutiepylabs/cutiepy/tree/main/cutiepy_website/",
+            "https://github.com/chenbobby/cutiepy/tree/main/cutiepy_website/",
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -71,7 +71,7 @@ const config = {
           },
           { to: "/blog", label: "Blog", position: "left" },
           {
-            href: "https://github.com/cutiepylabs/cutiepy",
+            href: "https://github.com/chenbobby/cutiepy",
             label: "Source Code",
             position: "right",
           },
@@ -111,7 +111,7 @@ const config = {
             items: [
               {
                 label: "GitHub Discussions",
-                to: "https://github.com/cutiepylabs/cutiepy/discussions"
+                to: "https://github.com/chenbobby/cutiepy/discussions"
               },
               {
                 label: "Slack",
@@ -141,7 +141,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} CutiePy Labs`,
+        copyright: `Copyright © ${new Date().getFullYear()} Bobby Chen.`,
       },
       prism: {
         theme: lightCodeTheme,
