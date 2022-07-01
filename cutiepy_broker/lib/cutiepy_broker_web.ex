@@ -48,21 +48,6 @@ defmodule CutiepyBrokerWeb do
         layout: {CutiepyBrokerWeb.LayoutView, "live.html"}
 
       unquote(view_helpers())
-
-      def handle_event("redirect_to_job_index", _params, socket) do
-        {:noreply,
-         push_redirect(socket, to: Routes.live_path(socket, CutiepyBrokerWeb.Job.Index))}
-      end
-
-      def handle_event("redirect_to_worker_index", _params, socket) do
-        {:noreply,
-         push_redirect(socket, to: Routes.live_path(socket, CutiepyBrokerWeb.Worker.Index))}
-      end
-
-      def handle_event("redirect_to_event_index", _params, socket) do
-        {:noreply,
-         push_redirect(socket, to: Routes.live_path(socket, CutiepyBrokerWeb.Event.Index))}
-      end
     end
   end
 
