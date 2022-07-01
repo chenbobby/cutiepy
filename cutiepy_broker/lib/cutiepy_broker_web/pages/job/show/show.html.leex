@@ -236,12 +236,12 @@
 										<tr>
 											<th class="min-w-full px-6 py-2">
 												<div>
-													EVENT ID
+													ID
 												</div>
 											</th>
 											<th class="min-w-full px-6 py-2">
 												<div>
-													EVENT DATA
+													RAW DATA
 												</div>
 											</th>
 										</tr>
@@ -256,7 +256,7 @@
 												</td>
 												<td class="px-6 py-1.5">
 													<div>
-														<%= inspect event.data %>
+														<%= Jason.encode!(event.data) %>
 													</div>
 												</td>
 											</tr>
