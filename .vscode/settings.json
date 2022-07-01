@@ -1,7 +1,7 @@
 {
     "editor.formatOnSave": true,
     "elixir.credo.strictMode": true,
-    "elixirLS.projectDir": "cutiepy_broker",
+    "elixirLS.projectDir": "cutiepy_cli/cutiepy_broker",
     "python.formatting.provider": "black",
     "python.linting.flake8Enabled": true,
     "python.linting.mypyEnabled": true,
