@@ -52,7 +52,7 @@
 							</td>
 							<td class="px-6 py-1.5">
 								<div>
-									<%= inspect event.data %>
+									<%= Jason.encode!(event.data) %>
 								</div>
 							</td>
 						</tr>
@@ -61,4 +61,5 @@
 			</table>
 		</div>
 	<% end %>
+	<%= inspect @socket %>
 </div>
