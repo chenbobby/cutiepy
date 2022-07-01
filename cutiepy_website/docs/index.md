@@ -88,33 +88,43 @@ Here are some high-level resources to help you learn more about CutiePy.
 
 ## What is CutiePy?
 
-CutiePy is a **batteries-included** [job queue](#TODO-write-blog-post) for Python.
+CutiePy is a **fully-featured job queue for Python workloads**.
 
-You can use CutiePy define "jobs" (any Python function) and run jobs in the background.
+CutiePy also ships with a **real-time monitoring dashboard** to help you track your jobs and workers.
+
+![CutiePy UI Screenshot](#TODO)
+
+You can use CutiePy to define "jobs" (any Python function) and run these jobs on background workers.
+
 You can also define:
 
-* [scheduled jobs](#TODO-scheduled-jobs-docs) to run at a later time
-* [periodic jobs](#TODO-periodic-jobs-docs) to run at regular intervals, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
+* [**scheduled jobs**](#TODO-scheduled-jobs-docs) that run at a later time
+* [**periodic jobs**](#TODO-periodic-jobs-docs) that run at regular intervals, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
 
 Here is a simple example of how CutiePy is used in practice:
 
-```python title="cutie.py"
+``` python title="cutie.py"
 import cutiepy
+import time
 
-registry = cutiepy.Registry(broker_url="http://localhost:9000")
+registry = cutiepy.Registry()
 
 @registry.job
 def bake_a_pie(flavor, recipient):
     time.sleep(3)
-    print(f"Your {flavor} pie for {recipient} is ready!")
+    pie = f"{flavor} pie for {recipient}"
+    print(f"Your {pie} is ready!")
+    return pie
 
 
-# Enqueue your job to run in the background.
+# Enqueue your job to run on a background worker.
 bake_a_pie.enqueue_job(args=["apple", "Alice"])
+
 ```
 
-```python title="Output from CutiePy worker"
-"Your apple pie for Alice is ready!"
+``` console title="Output"
+Printed to stdout: "Your apple pie for Alice is ready!"
+Return value:      "apple pie for Alice"
 ```
 
 Visit our [**Quickstart**](/docs/quickstart) guide to get up and running with CutiePy in less than 5 minutes.
