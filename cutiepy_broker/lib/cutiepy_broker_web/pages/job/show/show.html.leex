@@ -171,11 +171,7 @@
 									</thead>
 									<tbody>
 										<%= for job_run <- job_runs do %>
-											<tr
-												class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer"
-												phx-click="redirect_to_job_run_show"
-												phx-value-job_run_id=<%= job_run.id %>
-												>
+											<tr class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer">
 												<td class="px-6 py-1.5">
 													<div class="text-xs font-mono group-hover:underline">
 														<%= String.slice(job_run.id, -6..-1) %>
@@ -252,11 +248,7 @@
 									</thead>
 									<tbody>
 										<%= for event <- events do %>
-											<tr
-												class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer"
-												phx-click="redirect_to_event_show"
-												phx-value-job_run_id=<%= event.id %>
-												>
+											<tr class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer">
 												<td class="px-6 py-1.5">
 													<div class="text-xs font-mono group-hover:underline">
 														<%= String.slice(event.id, -6..-1) %>

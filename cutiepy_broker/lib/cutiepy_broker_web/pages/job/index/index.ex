@@ -11,9 +11,4 @@ defmodule CutiepyBrokerWeb.Job.Index do
     jobs = CutiepyBroker.Queries.jobs()
     {:noreply, assign(socket, jobs: jobs)}
   end
-
-  def handle_event("redirect_to_job_show", %{"job_id" => job_id}, socket) do
-    {:noreply,
-     push_redirect(socket, to: Routes.live_path(socket, CutiepyBrokerWeb.Job.Show, job_id))}
-  end
 end

@@ -1,7 +1,33 @@
-<div>
-  <nav>
+<div class="flex h-screen w-screen">
+  <nav class="shrink-0 h-full w-48 bg-slate-900">
+    <div class="p-6">
+      <div class="text-2xl text-slate-100 bold">
+        CutiePy UI
+      </div>
+    </div>
+    <%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Index) do %>
+      <div class="px-6 py-3 hover:bg-slate-700 hover:cursor-pointer">
+        <div class="text-lg text-slate-100 bold">
+          Jobs
+        </div>
+      </div>
+    <% end %>
+    <%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Worker.Index) do %>
+      <div class="px-6 py-3 hover:bg-slate-700 hover:cursor-pointer">
+        <div class="text-lg text-slate-100 bold">
+          Workers
+        </div>
+      </div>
+    <% end %>
+    <%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Event.Index) do %>
+      <div class="px-6 py-3 hover:bg-slate-700 hover:cursor-pointer">
+        <div class="text-lg text-slate-100 bold">
+          Events
+        </div>
+      </div>
+    <% end %>
   </nav>
-  <main>
+  <main class="grow">
     <div>
       <div phx-click="lv:clear-flash" phx-value-key="info">
         <%= live_flash(@flash, :info) %>
