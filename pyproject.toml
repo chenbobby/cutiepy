@@ -1,0 +1,59 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cutiepy"
+description = "CutiePy is an open source, fully featured job queue for Python workloads."
+readme = "README.md"
+requires-python = ">=3.7"
+license = "Apache-2.0"
+authors = [
+  { name="Bobby Chen", email="chenbobby@fastmail.com" },
+]
+keywords = [
+  "job queue",
+  "task queue",
+  "job scheduler",
+  "cron",
+  "worker",
+  "broker"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "click>=8.1",
+  "pickle5>=0.0.11",
+  "requests>=2.28",
+  "types-requests>=2.28",
+]
+dev-dependencies = [
+  "black",
+  "flake8",
+  "hatch",
+  "isort",
+  "mypy",
+  "pytest",
+  "pytest-cov",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://cutiepy.org"
+Documentation = "https://cutiepy.org/docs"
+"Source Code" = "https://github.com/chenbobby/cutiepy"
+"Bug Tracker" = "https://github.com/chenbobby/cutiepy/issues"
+
+[project.scripts]
+cutiepy = "cutiepy:main"
+
+[tool.hatch.build]
+packages = ["src/cutiepy"]
+artifacts = ["cutiepy_broker/_build/prod/rel/cutiepy_broker"]
+only-packages = true
+
+[tool.hatch.version]
+path = "src/cutiepy/__version__.py"

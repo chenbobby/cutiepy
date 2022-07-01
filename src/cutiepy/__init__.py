@@ -3,7 +3,12 @@ from typing import Any, Callable, Dict, List, Optional
 
 import requests
 
+from cutiepy.cli import cutiepy_cli_group
 from cutiepy.serde import serialize
+
+
+def main() -> None:
+    cutiepy_cli_group()
 
 
 class Registry:

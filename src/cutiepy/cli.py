@@ -1,19 +1,14 @@
 import importlib
 import pathlib
 import subprocess
-import sys
 import time
 from typing import NoReturn, Optional
 
 import click
 import requests
+
+from cutiepy.__version__ import __version__
 from cutiepy.serde import deserialize, serialize
-
-from cutiepy_cli.__version__ import __version__
-
-
-def main() -> NoReturn:
-    sys.exit(cutiepy_cli_group())
 
 
 @click.group(name="cutiepy")
