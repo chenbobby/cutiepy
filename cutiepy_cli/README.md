@@ -10,7 +10,3 @@ The CutiePy CLI is a Python application for:
 ``` console
 pip install cutiepy-cli
 ```
-
-## Licensing
-
-The CutiePy CLI is released under the GNU Affero General Public License v3.0.

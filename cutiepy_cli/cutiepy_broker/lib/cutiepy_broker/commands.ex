@@ -35,7 +35,7 @@ defmodule CutiepyBroker.Commands do
 
   def enqueue_job(
         %{
-          job_callable_key: _,
+          job_function_key: _,
           job_args_serialized: _,
           job_kwargs_serialized: _,
           job_args_repr: _,
@@ -125,7 +125,7 @@ defmodule CutiepyBroker.Commands do
             event_type: "assigned_job_run",
             job_run_id: job_run.id,
             job_id: job.id,
-            job_callable_key: job.callable_key,
+            job_function_key: job.function_key,
             job_args_serialized: job.args_serialized,
             job_kwargs_serialized: job.kwargs_serialized,
             worker_id: worker_id
@@ -387,7 +387,7 @@ defmodule CutiepyBroker.Commands do
   end
 
   defp dispatch_enqueue_job(%{
-         job_callable_key: job_callable_key,
+         job_function_key: job_function_key,
          job_args_serialized: job_args_serialized,
          job_kwargs_serialized: job_kwargs_serialized,
          job_args_repr: job_args_repr,
@@ -402,7 +402,7 @@ defmodule CutiepyBroker.Commands do
         id: Ecto.UUID.generate(),
         updated_at: now,
         enqueued_at: now,
-        callable_key: job_callable_key,
+        function_key: job_function_key,
         args_serialized: job_args_serialized,
         kwargs_serialized: job_kwargs_serialized,
         args_repr: job_args_repr,
@@ -417,7 +417,7 @@ defmodule CutiepyBroker.Commands do
         event_timestamp: now,
         event_type: "enqueued_job",
         job_id: job.id,
-        job_callable_key: job_callable_key,
+        job_function_key: job_function_key,
         job_args_repr: job_args_repr,
         job_kwargs_repr: job_args_repr,
         job_timeout_ms: job_timeout_ms

@@ -16,6 +16,15 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  "black",
+  "flake8",
+  "isort",
+  "mypy",
+  "pickle5",
+  "requests",
+  "types-requests",
+]
 
 [project.urls]
 "Homepage" = "https://cutiepy.org"

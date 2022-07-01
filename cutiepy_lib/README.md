@@ -10,7 +10,3 @@ The CutiePy Library is a Python library for:
 ``` bash
 pip install cutiepy
 ```
-
-## Licensing
-
-The CutiePy Library is released under the Apache License 2.0.

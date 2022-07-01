@@ -58,7 +58,7 @@ Here are some high-level resources to help you learn more about CutiePy.
     </Link>
     <br/>
     <span style={{"font-style": "italic"}}>
-        Read about CutiePy's architecture
+        Read about how CutiePy works under the hood
     </span>
 </p>
 <p>
@@ -88,9 +88,9 @@ Here are some high-level resources to help you learn more about CutiePy.
 
 ## What is CutiePy?
 
-CutiePy is a **fully-featured job queue for Python workloads**.
+CutiePy is an **open source, fully-featured job queue for Python workloads**.
 
-CutiePy also ships with a **real-time monitoring dashboard** to help you track your jobs and workers.
+CutiePy ships with a **real-time monitoring dashboard** to help you track your jobs and workers.
 
 ![CutiePy UI Screenshot](#TODO)
 

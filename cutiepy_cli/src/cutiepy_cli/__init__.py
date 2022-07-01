@@ -1,137 +1,153 @@
+import importlib
 import pathlib
+import subprocess
 import sys
-from typing import Any, Callable, Dict, List, NoReturn, Optional
+import time
+from typing import NoReturn, Optional
 
+import click
 import requests
+from cutiepy.serde import deserialize, serialize
 
-from cutiepy.cli import cutiepy_cli_group
-from cutiepy.serde import serialize
+from cutiepy_cli.__version__ import __version__
 
 
 def main() -> NoReturn:
     sys.exit(cutiepy_cli_group())
 
 
-class Registry:
-    _broker_url: str
-    _callable_key_to_callable: Dict[str, Callable]
+@click.group(name="cutiepy")
+@click.help_option("-h", "--help")
+@click.version_option(__version__, "-v", "--version")
+def cutiepy_cli_group() -> int:
+    pass
 
-    def __init__(self, broker_url: str) -> None:
-        self._broker_url = broker_url
-        self._callable_key_to_callable = {}
 
-    def __getitem__(self, callable_key: str) -> Callable:
-        return self._callable_key_to_callable[callable_key]
+@cutiepy_cli_group.group(name="broker")
+def broker_cli_group() -> int:
+    pass
 
-    def __setitem__(self, callable_key: str, callable_: Callable) -> None:
-        self._callable_key_to_callable[callable_key] = callable_
 
-    def __delitem__(self, callable_key: str) -> None:
-        del self._callable_key_to_callable[callable_key]
+@broker_cli_group.command(
+    name="migrate", help="Applies database migrations for a broker."
+)
+def broker_migrate_command() -> int:
+    path = pathlib.Path(__file__).parent.joinpath(
+        "../../cutiepy_broker/_build/prod/rel/cutiepy_broker/bin/migrate"
+    )
+    return subprocess.call(path)
 
-    def __contains__(self, callable_key: str) -> bool:
-        return callable_key in self._callable_key_to_callable
 
-    def enqueue_job(
-        self,
-        registered_callable: "RegisteredCallable",
-        *,
-        args: List = [],
-        kwargs: Dict = {},
-        job_timeout_ms: Optional[int] = None,
-        job_run_timeout_ms: Optional[int] = None,
-    ) -> str:
-        """
-        `enqueue` enqueues a job to execute `registered_callable` with
-        positional arguments `args` and keyword arguments `kwargs`.
-        """
-        callable_key = registered_callable.callable_key
-        if callable_key not in self:
-            raise RuntimeError(
-                f"callable with key {callable_key} is not registered!",
+@broker_cli_group.command(name="run", help="Starts a broker.")
+def broker_run_command() -> int:
+    path = pathlib.Path(__file__).parent.joinpath(
+        "../../cutiepy_broker/_build/prod/rel/cutiepy_broker/bin/server"
+    )
+    return subprocess.call(path)
+
+
+@cutiepy_cli_group.command(name="worker", help="Starts worker(s) to run jobs.")
+@click.option("-bu", "--broker-url", type=str, default="http://localhost:4000")
+def worker_command(broker_url: str) -> NoReturn:
+    response = requests.post(url=f"{broker_url}/api/register_worker")
+    assert response.ok
+
+    print(f"Connected to broker at {broker_url}")
+    response_body = response.json()
+    worker_id = response_body["worker_id"]
+    print(f"Worker ID {worker_id}")
+
+    module = importlib.import_module("cutie")
+    registry = getattr(module, "registry")
+
+    while True:
+        response = requests.post(
+            url=f"{broker_url}/api/assign_job_run",
+            json={"worker_id": worker_id},
+        )
+        assert response.ok
+
+        if response.status_code == requests.codes.NO_CONTENT:
+            print("No jobs are ready. Sleeping...")
+            time.sleep(0.5)
+            continue
+
+        print("Assigned a job!")
+
+        response_body = response.json()
+
+        exception: Optional[Exception] = None
+        job_run_id = response_body["job_run_id"]
+        function_key = response_body["job_function_key"]
+        if function_key not in registry:
+            print(f"Error: Callable key {function_key} is not in registry.")
+            exception = RuntimeError(
+                f"Callable key {function_key} is not in the CutiePy registry."
             )
+            response = requests.post(
+                url=f"{broker_url}/api/fail_job_run",
+                json={
+                    "job_run_id": job_run_id,
+                    "job_run_exception_serialized": serialize(exception),
+                    "job_run_exception_repr": repr(exception),
+                    "worker_id": worker_id,
+                },
+            )
+            if response.status_code == requests.codes.CONFLICT:
+                response_body = response.json()
+                error = response_body["error"]
+                print(f"Unable to fail the job run: {error}")
+                continue
 
-        if job_timeout_ms is not None:
-            assert job_timeout_ms >= 0
+            assert response.ok
+            continue
 
-        if job_run_timeout_ms is not None:
-            assert job_run_timeout_ms >= 0
+        function_ = registry[function_key]
+        args = deserialize(response_body["job_args_serialized"])
+        kwargs = deserialize(response_body["job_kwargs_serialized"])
 
-        response: requests.Response = requests.post(
-            url=f"{self._broker_url}/api/enqueue_job",
+        result = None
+        try:
+            result = function_(*args, **kwargs)
+        except Exception as e:
+            exception = e
+
+        if exception is not None:
+            print(f"Error: {exception}")
+            response = requests.post(
+                url=f"{broker_url}/api/fail_job_run",
+                json={
+                    "job_run_id": job_run_id,
+                    "job_run_exception_serialized": serialize(exception),
+                    "job_run_exception_repr": repr(exception),
+                    "worker_id": worker_id,
+                },
+            )
+            if response.status_code == requests.codes.CONFLICT:
+                response_body = response.json()
+                error = response_body["error"]
+                print(f"Unable to fail the job run: {error}")
+                continue
+
+            assert response.ok
+            continue
+
+        print(f"Result: {result}")
+
+        response = requests.post(
+            url=f"{broker_url}/api/complete_job_run",
             json={
-                "job_callable_key": callable_key,
-                "job_args_serialized": serialize(args),
-                "job_kwargs_serialized": serialize(kwargs),
-                "job_args_repr": [repr(arg) for arg in args],
-                "job_kwargs_repr": {repr(k): repr(v) for k, v in kwargs.items()},
-                "job_timeout_ms": job_timeout_ms,
-                "job_run_timeout_ms": job_run_timeout_ms,
+                "job_run_id": job_run_id,
+                "job_run_result_serialized": serialize(result),
+                "job_run_result_repr": repr(result),
+                "worker_id": worker_id,
             },
         )
-        response_body = response.json()
-        return response_body["job_id"]
 
-    def job(
-        self,
-        callable_: Callable,
-    ) -> "RegisteredCallable":
-        """
-        `job` adds `callable` into the CutiePy registry.
-        """
-        callable_key = _callable_key(callable_)
-        self[callable_key] = callable_
-        return RegisteredCallable(registry=self, callable_=callable_)
+        if response.status_code == requests.codes.CONFLICT:
+            response_body = response.json()
+            error = response_body["error"]
+            print(f"Unable to complete the job run: {error}")
+            continue
 
-
-class RegisteredCallable:
-    _registry: Registry
-    _callable: Callable
-
-    def __init__(self, registry: Registry, callable_: Callable) -> None:
-        self._registry = registry
-        self._callable = callable_  # type: ignore
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        return self._callable(*args, **kwargs)
-
-    @property
-    def callable_key(self) -> str:
-        return _callable_key(self._callable)
-
-    def enqueue_job(
-        self,
-        *,
-        args: List = [],
-        kwargs: Dict = {},
-        job_timeout_ms: Optional[int] = None,
-        job_run_timeout_ms: Optional[int] = None,
-    ) -> str:
-        if job_timeout_ms is not None:
-            assert job_timeout_ms >= 0
-
-        if job_run_timeout_ms is not None:
-            assert job_run_timeout_ms >= 0
-
-        return self._registry.enqueue_job(
-            registered_callable=self,
-            args=args,
-            kwargs=kwargs,
-            job_timeout_ms=job_timeout_ms,
-            job_run_timeout_ms=job_run_timeout_ms,
-        )
-
-
-def _callable_key(callable_: Callable) -> str:
-    module_name = callable_.__module__
-    if module_name == "__main__":
-        # The module name of `callable_` is "__main__", which indicates
-        # that the module is a Python file. In order for CutiePy workers
-        # to find the `callable_`, "__main__" must be replaced with the
-        # Python file's name.
-        import __main__
-
-        file_name = pathlib.Path(__main__.__file__).stem
-        module_name = module_name.replace("__main__", file_name)
-
-    return f"{module_name}.{callable_.__name__}"
+        assert response.ok

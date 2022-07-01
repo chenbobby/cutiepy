@@ -4,7 +4,7 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
   def create(
         conn,
         %{
-          "job_callable_key" => job_callable_key,
+          "job_function_key" => job_function_key,
           "job_args_serialized" => job_args_serialized,
           "job_kwargs_serialized" => job_kwargs_serialized,
           "job_args_repr" => job_args_repr,
@@ -14,7 +14,7 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
         }
       ) do
     case CutiepyBroker.Commands.enqueue_job(%{
-           job_callable_key: job_callable_key,
+           job_function_key: job_function_key,
            job_args_serialized: job_args_serialized,
            job_kwargs_serialized: job_kwargs_serialized,
            job_args_repr: job_args_repr,

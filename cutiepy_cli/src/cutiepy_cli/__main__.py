@@ -1,3 +1,3 @@
-import cutiepy
+import cutiepy_cli
 
-cutiepy.main()
+cutiepy_cli.main()

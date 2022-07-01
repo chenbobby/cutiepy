@@ -16,6 +16,14 @@ classifiers = [
     "License :: OSI Approved :: GNU Affero General Public License v3",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  "black",
+  "flake8",
+  "isort",
+  "mypy",
+  "requests",
+  "types-requests",
+]
 
 [project.urls]
 "Homepage" = "https://cutiepy.org"

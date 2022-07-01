@@ -9,7 +9,7 @@ defmodule CutiepyBroker.Job do
     field :failed_at, :utc_datetime_usec
     field :timed_out_at, :utc_datetime_usec
     field :status, :string
-    field :callable_key, :string
+    field :function_key, :string
     field :args_serialized, :string
     field :kwargs_serialized, :string
     field :args_repr, {:array, :string}

@@ -1,3 +1,0 @@
-import cutiepy
-
-cutiepy.main()

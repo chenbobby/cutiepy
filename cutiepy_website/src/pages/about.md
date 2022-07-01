@@ -4,16 +4,18 @@ Welcome to CutiePy! This page contains background information about the CutiePy 
 
 ## What is CutiePy?
 
-CutiePy is a **batteries-included** job queue for Python workloads.
+CutiePy is an **open source, fully-featured job queue for Python workloads**.
 
-You can use CutiePy define "jobs" (any Python function) and run these jobs with background workers.
+CutiePy ships with a **real-time monitoring dashboard** to help you track your jobs and workers.
+
+![CutiePy UI Screenshot](#TODO)
+
+You can use CutiePy to define "jobs" (any Python function) and run these jobs on background workers.
 
 You can also define:
 
-* [scheduled jobs](#TODO-scheduled-jobs-docs) to run at a later time
-* [periodic jobs](#TODO-periodic-jobs-docs) to run at regular intervals, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
-
-CutiePy includes a [web browser UI](#TODO-ui-docs) to assist you in monitoring jobs and troubleshooting issues.
+* [**scheduled jobs**](#TODO-scheduled-jobs-docs) that run at a later time
+* [**periodic jobs**](#TODO-periodic-jobs-docs) that run at regular intervals, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
 
 You can learn more about CutiePy in our [**documentation**](/docs).
 
@@ -36,19 +38,10 @@ My work has involved building internal tools for managing web infrastructure, Ku
 
 I created CutiePy for my colleagues, my friends, and the wider Python community.
 CutiePy was originally designed to help manage background jobs in our Django and Flask applications, such as making asynchronous API requests to email providers, connecting to Slack/Discord endpoints, and sending webhooks.
-Beyond web applications, CutiePy is also used in research for running ML experiments and queueing long-running Python jobs.
+Beyond web applications, CutiePy is also used in research for parallelizing data pipelines, ML experiments, and other long-running Python workloads.
 
 ## How is CutiePy licensed?
 
-CutiePy is pubicly available in the GitHub repository [`chenbobby/cutiepy`](https://github.com/chenbobby/cutiepy). CutiePy is released under OSI-approved licenses.
+CutiePy is open source, released under the **Apache License 2.0**.
 
-CutiePy consists of two components:
-
-* the CutiePy Python library
-* the CutiePy CLI application
-
-The **CutiePy Python library** is released under the **Apache License 2.0** (Apache-2.0). [Read more about Apache-2.0](https://opensource.org/licenses/Apache-2.0)
-
-The **CutiePy CLI application** is released under the **GNU Affero General Public License v3.0** (AGPL-3.0). [Read more about AGPL-3.0](https://opensource.org/licenses/AGPL-3.0)
-
-Also, the source code for this website, [cutiepy.org](https://cutiepy.org), is released under the Apache License 2.0 (Apache-2.0). [Read more about Apache-2.0](https://opensource.org/licenses/Apache-2.0)
+The source code of CutiePy is available in the official GitHub repository [**chenbobby/cutiepy**](https://github.com/chenbobby/cutiepy).
