@@ -22,8 +22,8 @@ defmodule CutiepyBrokerWeb.EnqueueJobController do
            job_timeout_ms: job_timeout_ms,
            job_run_timeout_ms: job_run_timeout_ms
          }) do
-      {:ok, [event]} ->
-        render(conn, "response.json", event: event)
+      {:ok, [enqueued_job_event]} ->
+        render(conn, "response.json", event: enqueued_job_event)
     end
   end
 end

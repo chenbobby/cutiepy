@@ -68,6 +68,12 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_result()
   end
 
+  def register_worker(%{} = params) do
+    params
+    |> dispatch_register_worker()
+    |> handle_command_result()
+  end
+
   def time_out_job(%{job_id: _} = params) do
     params
     |> dispatch_time_out_job()
@@ -532,6 +538,29 @@ defmodule CutiepyBroker.Commands do
         "TIMED_OUT" ->
           CutiepyBroker.Repo.rollback(:job_run_timed_out)
       end
+    end)
+  end
+
+  defp dispatch_register_worker(%{}) do
+    CutiepyBroker.Repo.transaction(fn ->
+      now = DateTime.utc_now()
+
+      worker = %CutiepyBroker.Worker{
+        id: Ecto.UUID.generate(),
+        updated_at: now
+      }
+
+      event = %{
+        id: Ecto.UUID.generate(),
+        event_type: "registered_worker",
+        registered_worker_at: now,
+        worker_id: worker.id
+      }
+
+      CutiepyBroker.Repo.insert!(worker)
+      CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
+
+      [event]
     end)
   end
 

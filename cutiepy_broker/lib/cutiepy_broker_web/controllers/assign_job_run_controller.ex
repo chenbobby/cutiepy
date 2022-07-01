@@ -6,8 +6,8 @@ defmodule CutiepyBrokerWeb.AssignJobRunController do
       {:ok, []} ->
         send_resp(conn, :no_content, "")
 
-      {:ok, [event]} ->
-        render(conn, "ok.json", event: event)
+      {:ok, [assigned_job_run_event | _]} ->
+        render(conn, "ok.json", event: assigned_job_run_event)
     end
   end
 end

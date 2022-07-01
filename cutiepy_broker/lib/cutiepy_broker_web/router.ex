@@ -27,6 +27,7 @@ defmodule CutiepyBrokerWeb.Router do
     post "/assign_job_run", AssignJobRunController, :create
     post "/complete_job_run", CompleteJobRunController, :create
     post "/enqueue_job", EnqueueJobController, :create
+    post "/register_worker", RegisterWorkerController, :create
     post "/fail_job_run", FailJobRunController, :create
   end
 

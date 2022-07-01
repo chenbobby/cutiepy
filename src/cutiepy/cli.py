@@ -3,7 +3,7 @@ import pathlib
 import subprocess
 import time
 import uuid
-from typing import NoReturn
+from typing import NoReturn, Optional
 
 import click
 import requests
@@ -45,11 +45,19 @@ def broker_run_command() -> int:
 @cutiepy_cli_group.command(name="worker", help="Starts worker(s) to run jobs.")
 @click.option("-bu", "--broker-url", type=str, default="http://localhost:4000")
 def worker_command(broker_url: str) -> NoReturn:
-    worker_id = str(uuid.uuid4())
+    response = requests.post(url=f"{broker_url}/api/register_worker")
+    assert response.ok
+
+    print(f"Connected to broker at {broker_url}")
+    response_body = response.json()
+    worker_id = response_body["worker_id"]
+    print(f"Worker ID {worker_id}")
+
     module = importlib.import_module("cutie")
     registry = getattr(module, "registry")
+
     while True:
-        response: requests.Response = requests.post(
+        response = requests.post(
             url=f"{broker_url}/api/assign_job_run",
             json={"worker_id": worker_id},
         )
@@ -64,7 +72,7 @@ def worker_command(broker_url: str) -> NoReturn:
 
         response_body = response.json()
 
-        exception = None
+        exception: Optional[Exception] = None
         job_run_id = response_body["job_run_id"]
         callable_key = response_body["job_callable_key"]
         if callable_key not in registry:
