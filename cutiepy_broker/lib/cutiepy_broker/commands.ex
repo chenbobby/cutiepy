@@ -49,12 +49,6 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_result()
   end
 
-  def fail_job(%{job_id: _} = params) do
-    params
-    |> dispatch_fail_job()
-    |> handle_command_result()
-  end
-
   def fail_job_run(
         %{
           job_run_id: _,
