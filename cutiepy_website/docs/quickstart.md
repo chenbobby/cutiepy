@@ -8,16 +8,18 @@ import TabItem from '@theme/TabItem';
 
 # Quickstart
 
-Welcome to the Quickstart guide. This page will teach you how to:
+Welcome to the CutiePy Quickstart guide. This page will teach you how to:
 
 1. [**Install CutiePy**](#1-install-cutiepy)
-1. Register your Python function with CutiePy.
-1. Start a broker server.
-1. Enqueue your Python function as a job.
-1. Run your job with a background worker.
+1. [**Register your Python function with CutiePy**](#2-register-your-python-function-with-cutiepy)
+1. [**Start a broker server**](#3-start-a-broker-server)
+1. [**Enqueue your Python function as a job**](#4-enqueue-your-python-function-as-a-job)
+1. [**Run your job with a background worker**](#5-start-a-background-worker)
 
 This Quickstart guide is beginner-friendly.
-Before you start, you should at least be comfortable with writing Python code and using the your terminal to run shell commands.
+Before you begin, you should at least be comfortable with writing Python code and using the your terminal to run shell commands.
+
+All the code examples in this quickstart guide are publicly available in the GitHub repository [**cutiepylabs/cutiepy-quickstart-guide**](https://github.com/cutiepylabs/cutiepy-quickstart-guide).
 
 Let's get started!
 
@@ -31,7 +33,7 @@ Next, install the `cutiepy` and `cutiepy-cli` package from PyPI by using `pip`, 
 <Tabs>
   <TabItem value="pip" label="Use pip" default>
 
-```sh title="Terminal"
+```sh title="In your terminal"
 pip install cutiepy cutiepy-cli
 ```
 
@@ -79,6 +81,8 @@ In the example below, our Registry object is named `registry`.
 Third, define a function that you want to run in the background, and use the `@registry.job` decorator to register your function in the Registry.
 In the example below, our function is named `bake_a_pie`.
 
+After completing these steps, your Python file should look something like this.
+
 ```python title="cutie.py"
 import cutiepy
 import time
@@ -98,9 +102,9 @@ The `@registry.job` is a [_function decorator_](https://www.geeksforgeeks.org/de
 After registering your function, you can still run it like any old Python function.
 
 ```python title="In a Python program"
->>> bake_a_pie("apple", "Alice")
+bake_a_pie("apple", "Alice")
 # Sleeps 3 seconds...
-"Your apple pie for Alice is ready!"
+> "Your apple pie for Alice is ready!"
 ```
 
 Our function `bake_a_pie` takes at least 3 seconds to run in the _foreground_.
@@ -108,7 +112,7 @@ In the next few steps, you will learn how to run your function in the _backgroun
 
 ## 3. Start a broker server
 
-After you define a function and register it in your Registry, the next step is to start a CutiePy [**Broker**](#TODO-broker-explanation).
+After you register your function in your Registry, the next step is to start a CutiePy [**Broker**](#TODO-broker-explanation).
 
 :::info Explanation
 
@@ -140,7 +144,7 @@ For example, you should see something like this:
 
 ![CutiePy UI](#TODO-cutiepy-ui-screenshot)
 
-The CutiePy UI provides a graphical interface for you to monitor your Jobs and Workers.
+The CutiePy UI is a graphical interface for you to monitor your Jobs and Workers.
 You will not see any Jobs yet, but you will soon, after we enqueue a Job in the next step!
 
 ## 4. Enqueue your Python function as a job
@@ -149,13 +153,13 @@ After you start the Broker, the next step is to enqueue your function as a Cutie
 
 :::info Explanation
 
-A [**Job**](#TODO-job-explanation) is a JSON object that represents the function that you want to run and any arguments that you want to pass into the function.
+A [**Job**](#TODO-job-explanation) is a JSON object that contains the name of the function that you want to run and any arguments that you want to pass into the function.
 A Job can also contain additional information for [timeouts](#TODO-timeout-explanation), [retries](#TODO-retry-explanation), and more.
 We will not discuss timeouts and retries in this Quickstart guide, but you can learn more about them in the [**Tutorial**](/docs/tutorial) and [**Explanations**](/docs/explanations) section of our documentation.
 
 :::
 
-To enqueue your function as a Job, use the `.enqueue_job(...)` method. This method was added to your function when you registered it in your Registry with the `@registry.job` decorator. In the example below, we enqueue a job to run the function `bake_a_cake` with the arguments `"apple"` and `"Alice"`.
+To enqueue your function as a Job, use the `.enqueue_job(...)` method. This method was added to your function when you registered your function in your Registry with the `@registry.job` decorator. In the example below, we enqueue a job to run our function `bake_a_pie` with the arguments `"apple"` and `"Alice"`.
 
 ```python title="cutie.py"
 import cutiepy
@@ -175,11 +179,15 @@ bake_a_pie.enqueue_job(args=["apple", "Alice"])
 
 ```
 
-Next, open a new terminal (a different terminal than the one that is running your Broker) and run this Python file. If you get no errors, then you have successfully enqueued a new Job!
+Next, open a new terminal (a different terminal than the one that is running your Broker) and run this Python file.
 
-To check that your Job has been enqueued, open the CutiePy UI that should be running on <Link to="http://localhost:9000/">http://localhost:9000</Link>. You should see that your Job has a name of `cutie.bake_a_cake` and status of `Ready`.
+If you get no errors, then you have successfully enqueued a new Job!
 
-![Ready to bake a cake](#TODO-ui-screenshot)
+You can also check that your Job has been enqueued by looking at the CutiePy UI.
+Open your web browser to <Link to="http://localhost:9000/">http://localhost:9000</Link>.
+You should see that your Job has a name of `cutie.bake_a_pie` and a status of `Ready`.
+
+![Ready to bake a pie](#TODO-ui-screenshot)
 
 We are almost done! The last step is to start a Worker so it can run your Job.
 
@@ -189,7 +197,11 @@ After you enqueue your Job, the next step is to start a CutiePy [**Worker**](#TO
 
 :::info Explanation
 
-A [**Worker**](#TODO-worker-explanation) is background process that asks the Broker for any Jobs that are ready to be run. If the Broker provides the Worker with a Job, then the Worker will run the Job and return the result to the Broker. If the Job has no return value, then the Worker will run the Job and simply notify the Broker that it has completed.
+A [**Worker**](#TODO-worker-explanation) is background process that asks the Broker for any Jobs that are ready to be run.
+If the Broker provides the Worker with a Job, then the Worker will run the Job and notify the Broker when the Job has been completed.
+If the Job has a return value, then the Worker will also store the return value with the Broker.
+
+After a Worker has completed a Job, it will continue to ask the Broker for more Jobs that are ready to run.
 
 :::
 
@@ -207,39 +219,46 @@ After you run the command above, you should see the following output in your ter
 [CutiePy Worker] Worker has connected to the Broker at http://localhost:9000.
 [CutiePy Worker] My Worker ID is 12341234-1234-1234-1234-123412341234
 [CutiePy Worker] Requesting for a new job to run...
-[CutiePy Worker] Received a job "cutie.bake_a_cake"
+[CutiePy Worker] Received a job "cutie.bake_a_pie"
 [CutiePy Worker] Your apple pie for Alice is ready!
-[CutiePy Worker] Completed job "cutie.bake_a_cake"
+[CutiePy Worker] Completed job "cutie.bake_a_pie"
 [CutiePy Worker] Requesting for a new job to run...
 ```
 
-Congratulations! You just ran your first Job with a Worker!
+You just ran your first Job with a Worker!
 
-You can check the result of your Job in the CutiePy UI. 
+You can also check that your Job has been completed by looking at the CutiePy UI.
+Open your web browser to <Link to="http://localhost:9000/">http://localhost:9000</Link>.
+You should see that your Job now has a status of  `Success`.
 
----
+![CutiePy UI](#TODO-cutiepy-ui-screenshot)
 
-Your program should finish instantly, because your task is now running in the background. After 3 seconds, check the terminal that is running your workers and you should see this message:
+If you click the row with your Job, you can view more details about the Job and its results.
 
-```text title="Terminal"
-[CutiePy::Worker[0] Output] Your apple pie for Alice is ready!
-```
-
-Congratulations! You just ran your first CutiePy task in the background!
+![CutiePy UI](#TODO-cutiepy-ui-screenshot)
 
 ## Next Steps
 
-This quickstart guide only scratches the surface of CutiePy's features. Learn more about CutiePy's features in the [tutorial](#). In the tutorial, you will learn:
+Congratulations! You have completed the CutiePy quickstart guide.
 
-* How to build an X with CutiePy
-* How to use the CutiePy [dashboard](#) to monitor your workers and tasks
+All the code examples in this quickstart guide are publicly available in the GitHub repository<br/>[`cutiepylabs/cutiepy-quickstart-guide`](https://github.com/cutiepylabs/cutiepy-quickstart-guide).
 
-CutiePy is flexible for a wide range of use cases. Learn how to build and deploy applications in our [how-to guides](#).
+This quickstart guide only scratches the surface of CutiePy's features.
+You can also use CutiePy to create:
 
-CutiePy is a distributed task queue that can scale up to 1000s of workers. Learn more about CutiePy's [architecture](#) in our documentation.
+* [scheduled jobs](#TODO-scheduled-jobs-docs) to run at a later time
+* [periodic jobs](#TODO-periodic-jobs-docs) to run at regular intervals, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
 
-## Community and Support
+You can learn more about CutiePy's features in the [**Tutorial**](#).
+In the tutorial, you will learn how to build an X with CutiePy!
 
-CutiePy is open sourced on [GitHub](https://github.com/cutiepy/cutiepy) and supported by a community of developers. If you have any questions, please [start a discussion](#) or [open an issue](#).
+CutiePy is flexible for a wide range of use cases.
+Learn how to build and deploy applications in our [**How-To Guides**](#).
 
-You can also join our [Slack community](#) for faster conversations.
+### Community and Support
+
+If you have any questions or problems, please [start a discussion](https://github.com/cutiepylabs/cutiepy/discussions) or [open an issue](https://github.com/cutiepylabs/cutiepy/issues) on GitHub.
+
+You can also join our [CutiePy Slack community](#) for faster support.
+
+The source code for CutiePy is publicly available in the GitHub repository [**cutiepylabs/cutiepy**](https://github.com/cutiepylabs/cutiepy).
