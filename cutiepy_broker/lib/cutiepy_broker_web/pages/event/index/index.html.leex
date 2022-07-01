@@ -1,11 +1,11 @@
 <div class="pt-16 px-8">
 	<div class="mb-4 px-6">
-		<h1 class="text-xl text-slate-800 font-bold">Workers</h1>
+		<h1 class="text-xl text-slate-800 font-bold">Events</h1>
 	</div>
-	<%= case @workers do %>
+	<%= case @events do %>
 	<% [] -> %>
-		<p>No workers yet! See the documentation on how to start new workers for CutiePy.</p>
-	<% workers -> %>
+		<p>No events yet! See the documentation on how to create new events for CutiePy.</p>
+	<% events -> %>
 		<div class="max-w-fit overflow-x-auto rounded shadow">
 			<table class="block w-fit text-sm whitespace-nowrap">
 				<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
@@ -17,22 +17,42 @@
 						</th>
 						<th class="min-w-full px-6 py-2">
 							<div>
-								LAST UPDATED
+								TIMESTAMP
+							</div>
+						</th>
+						<th class="min-w-full px-6 py-2">
+							<div>
+								TYPE
+							</div>
+						</th>
+						<th class="min-w-full px-6 py-2">
+							<div>
+								RAW DATA
 							</div>
 						</th>
 					</tr>
 				</thead>
 				<tbody>
-					<%= for worker <- workers do %>
+					<%= for event <- events do %>
 						<tr class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer">
 							<td class="px-6 py-1.5">
 								<div class="text-xs font-mono group-hover:underline">
-									<%= String.slice(worker.id, -6..-1) %>
+									<%= String.slice(event.id, -6..-1) %>
 								</div>
 							</td>
 							<td class="px-6 py-1.5">
 								<div>
-									<%= Calendar.strftime(worker.updated_at, "%c:%f") %>
+									<%= Calendar.strftime(event.timestamp, "%c:%f") %>
+								</div>
+							</td>
+							<td class="px-6 py-1.5">
+								<div>
+									<%= event.type %>
+								</div>
+							</td>
+							<td class="px-6 py-1.5">
+								<div>
+									<%= inspect event.data %>
 								</div>
 							</td>
 						</tr>

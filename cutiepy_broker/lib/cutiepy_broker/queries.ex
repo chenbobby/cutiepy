@@ -2,10 +2,21 @@ defmodule CutiepyBroker.Queries do
   @moduledoc false
   import Ecto.Query
 
+  def events do
+    CutiepyBroker.Repo.all(
+      from event in CutiepyBroker.Event,
+        order_by: [desc: event.timestamp],
+        limit: 20,
+        select: event
+    )
+  end
+
   def events(%{job_id: job_id}) do
     CutiepyBroker.Repo.all(
       from event in CutiepyBroker.Event,
         where: event.data["job_id"] == ^job_id,
+        order_by: [desc: event.timestamp],
+        limit: 20,
         select: event
     )
   end

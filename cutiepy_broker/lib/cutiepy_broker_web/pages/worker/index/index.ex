@@ -9,6 +9,6 @@ defmodule CutiepyBrokerWeb.Worker.Index do
 
   def handle_info(%{event_type: "registered_worker"}, socket) do
     workers = CutiepyBroker.Queries.workers()
-    {:ok, assign(socket, workers: workers)}
+    {:noreply, assign(socket, workers: workers)}
   end
 end

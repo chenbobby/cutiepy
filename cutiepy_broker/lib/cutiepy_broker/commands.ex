@@ -120,9 +120,9 @@ defmodule CutiepyBroker.Commands do
           job_changeset = Ecto.Changeset.change(job, status: "IN_PROGRESS")
 
           event = %{
-            id: Ecto.UUID.generate(),
+            event_id: Ecto.UUID.generate(),
+            event_timestamp: now,
             event_type: "assigned_job_run",
-            assigned_job_run_at: now,
             job_run_id: job_run.id,
             job_id: job.id,
             job_callable_key: job.callable_key,
@@ -162,9 +162,9 @@ defmodule CutiepyBroker.Commands do
             )
 
           event = %{
-            id: Ecto.UUID.generate(),
+            event_id: Ecto.UUID.generate(),
+            event_timestamp: now,
             event_type: "canceled_job",
-            canceled_job_at: now,
             job_id: job_id
           }
 
@@ -227,9 +227,9 @@ defmodule CutiepyBroker.Commands do
             )
 
           event = %{
-            id: Ecto.UUID.generate(),
+            event_id: Ecto.UUID.generate(),
+            event_timestamp: now,
             event_type: "canceled_job_run",
-            canceled_job_run_at: now,
             job_run_id: job_run_id
           }
 
@@ -292,9 +292,9 @@ defmodule CutiepyBroker.Commands do
             )
 
           event = %{
-            id: Ecto.UUID.generate(),
+            event_id: Ecto.UUID.generate(),
+            event_timestamp: now,
             event_type: "completed_job",
-            completed_job_at: now,
             job_id: job.id
           }
 
@@ -358,9 +358,9 @@ defmodule CutiepyBroker.Commands do
             )
 
           event = %{
-            id: Ecto.UUID.generate(),
+            event_id: Ecto.UUID.generate(),
+            event_timestamp: now,
             event_type: "completed_job_run",
-            completed_job_run_at: now,
             job_run_id: job_run_id
           }
 
@@ -413,9 +413,9 @@ defmodule CutiepyBroker.Commands do
       }
 
       event = %{
-        id: Ecto.UUID.generate(),
+        event_id: Ecto.UUID.generate(),
+        event_timestamp: now,
         event_type: "enqueued_job",
-        enqueued_job_at: now,
         job_id: job.id,
         job_callable_key: job_callable_key,
         job_args_repr: job_args_repr,
@@ -452,9 +452,9 @@ defmodule CutiepyBroker.Commands do
             )
 
           event = %{
-            id: Ecto.UUID.generate(),
+            event_id: Ecto.UUID.generate(),
+            event_timestamp: now,
             event_type: "failed_job",
-            failed_job_at: now,
             job_id: job.id
           }
 
@@ -518,9 +518,9 @@ defmodule CutiepyBroker.Commands do
             )
 
           event = %{
-            id: Ecto.UUID.generate(),
+            event_id: Ecto.UUID.generate(),
+            event_timestamp: now,
             event_type: "failed_job_run",
-            failed_job_run_at: now,
             job_run_id: job_run_id
           }
 
@@ -556,9 +556,9 @@ defmodule CutiepyBroker.Commands do
       }
 
       event = %{
-        id: Ecto.UUID.generate(),
+        event_id: Ecto.UUID.generate(),
+        event_timestamp: now,
         event_type: "registered_worker",
-        registered_worker_at: now,
         worker_id: worker.id
       }
 
@@ -591,9 +591,9 @@ defmodule CutiepyBroker.Commands do
             )
 
           event = %{
-            id: Ecto.UUID.generate(),
+            event_id: Ecto.UUID.generate(),
+            event_timestamp: now,
             event_type: "timed_out_job",
-            timed_out_job_at: now,
             job_id: job_id
           }
 
@@ -662,9 +662,9 @@ defmodule CutiepyBroker.Commands do
             )
 
           event = %{
-            id: Ecto.UUID.generate(),
+            event_id: Ecto.UUID.generate(),
+            event_timestamp: now,
             event_type: "timed_out_job_run",
-            timed_out_job_run_at: now,
             job_run_id: job_run_id
           }
 
