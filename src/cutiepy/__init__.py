@@ -4,6 +4,7 @@ import pathlib
 import subprocess
 import sys
 import time
+from datetime import datetime
 from typing import Any, Callable, Dict, List, NoReturn, Optional
 
 import click
@@ -45,9 +46,9 @@ class Registry:
         kwargs: Dict = {},
         job_timeout_ms: Optional[int] = None,
         job_run_timeout_ms: Optional[int] = None,
-    ) -> str:
+    ) -> None:
         """
-        `enqueue` enqueues a job to execute `registered_function` with
+        `enqueue_job` enqueues a job to execute `registered_function` with
         positional arguments `args` and keyword arguments `kwargs`.
         """
         function_key = registered_function.function_key
@@ -62,20 +63,59 @@ class Registry:
         if job_run_timeout_ms is not None:
             assert job_run_timeout_ms >= 0
 
-        response: requests.Response = requests.post(
+        response = requests.post(
             url=f"{self._broker_url}/api/enqueue_job",
             json={
                 "job_function_key": function_key,
-                "job_args_serialized": serialize(args),
-                "job_kwargs_serialized": serialize(kwargs),
+                "job_args_serialized": _serialize(args),
+                "job_kwargs_serialized": _serialize(kwargs),
                 "job_args_repr": [repr(arg) for arg in args],
                 "job_kwargs_repr": {repr(k): repr(v) for k, v in kwargs.items()},
                 "job_timeout_ms": job_timeout_ms,
                 "job_run_timeout_ms": job_run_timeout_ms,
             },
         )
-        response_body = response.json()
-        return response_body["job_id"]
+        assert response.ok
+
+    def schedule_job(
+        self,
+        registered_function: "RegisteredFunction",
+        *,
+        args: List = [],
+        kwargs: Dict = {},
+        job_timeout_ms: Optional[int] = None,
+        job_run_timeout_ms: Optional[int] = None,
+        enqueue_after: datetime,
+    ) -> None:
+        """
+        `schedule_job` schedules a job to be enqueued after `enqueue_after`.
+        """
+        function_key = registered_function.function_key
+        if function_key not in self:
+            raise RuntimeError(
+                f"function with key {function_key} is not registered!",
+            )
+
+        if job_timeout_ms is not None:
+            assert job_timeout_ms >= 0
+
+        if job_run_timeout_ms is not None:
+            assert job_run_timeout_ms >= 0
+
+        response = requests.post(
+            url=f"{self._broker_url}/api/schedule_job",
+            json={
+                "function_key": function_key,
+                "args_serialized": _serialize(args),
+                "kwargs_serialized": _serialize(kwargs),
+                "args_repr": [repr(arg) for arg in args],
+                "kwargs_repr": {repr(k): repr(v) for k, v in kwargs.items()},
+                "job_timeout_ms": job_timeout_ms,
+                "job_run_timeout_ms": job_run_timeout_ms,
+                "enqueue_after": enqueue_after.isoformat(),
+            },
+        )
+        assert response.ok
 
     def job(
         self,
@@ -111,7 +151,11 @@ class RegisteredFunction:
         kwargs: Dict = {},
         job_timeout_ms: Optional[int] = None,
         job_run_timeout_ms: Optional[int] = None,
-    ) -> str:
+    ) -> None:
+        """
+        `enqueue_job` enqueues a job to execute `registered_function` with
+        positional arguments `args` and keyword arguments `kwargs`.
+        """
         if job_timeout_ms is not None:
             assert job_timeout_ms >= 0
 
@@ -124,6 +168,33 @@ class RegisteredFunction:
             kwargs=kwargs,
             job_timeout_ms=job_timeout_ms,
             job_run_timeout_ms=job_run_timeout_ms,
+        )
+
+    def schedule_job(
+        self,
+        *,
+        args: List = [],
+        kwargs: Dict = {},
+        job_timeout_ms: Optional[int] = None,
+        job_run_timeout_ms: Optional[int] = None,
+        enqueue_after: datetime,
+    ) -> None:
+        """
+        `schedule_job` schedules a job to be enqueued after `enqueue_after`.
+        """
+        if job_timeout_ms is not None:
+            assert job_timeout_ms >= 0
+
+        if job_run_timeout_ms is not None:
+            assert job_run_timeout_ms >= 0
+
+        return self._registry.schedule_job(
+            registered_function=self,
+            args=args,
+            kwargs=kwargs,
+            job_timeout_ms=job_timeout_ms,
+            job_run_timeout_ms=job_run_timeout_ms,
+            enqueue_after=enqueue_after,
         )
 
 
@@ -140,6 +211,48 @@ def _function_key(function: Callable) -> str:
         module_name = module_name.replace("__main__", file_name)
 
     return f"{module_name}.{function.__name__}"
+
+
+def _import_registry_from_string(import_str: str) -> "Registry":
+    module_str, _, attrs_str = import_str.partition(":")
+    if not module_str or not attrs_str:
+        raise RuntimeError(
+            f"""
+            Your Registry's Import string {import_str} must be in the format
+            '<module>:<attribute>'
+            """
+        )
+
+    try:
+        module = importlib.import_module(module_str)
+    except ImportError as exc:
+        if exc.name != module_str:
+            raise exc from None
+        raise RuntimeError(f"Could not import module '{module_str}'")
+
+    instance: Any = module
+    try:
+        for attr_str in attrs_str.split("."):
+            instance = getattr(instance, attr_str)
+    except AttributeError:
+        raise RuntimeError(
+            f"""
+            Attribute '{attrs_str} not found in module '{module_str}'
+            """
+        )
+
+    return instance
+
+
+def _serialize(x: Any) -> str:
+    x_pickled: bytes = pickle.dumps(x, protocol=pickle.HIGHEST_PROTOCOL)
+    x_encoded: bytes = base64.b64encode(x_pickled)
+    return x_encoded.decode()
+
+
+def _deserialize(x_encoded: str) -> Any:
+    x_pickled: bytes = base64.b64decode(x_encoded, validate=True)
+    return pickle.loads(x_pickled)
 
 
 @click.group(name="cutiepy")
@@ -185,7 +298,7 @@ def worker_command(broker_url: str) -> NoReturn:
 
     sys.path.insert(0, str(pathlib.Path.cwd()))
     import_str = "cutie:registry"
-    registry = import_registry_from_string(import_str)
+    registry = _import_registry_from_string(import_str)
 
     while True:
         response = requests.post(
@@ -195,8 +308,7 @@ def worker_command(broker_url: str) -> NoReturn:
         assert response.ok
 
         if response.status_code == requests.codes.NO_CONTENT:
-            print("No jobs are ready. Sleeping...")
-            time.sleep(0.5)
+            time.sleep(0.1)
             continue
 
         print("Assigned a job!")
@@ -215,7 +327,7 @@ def worker_command(broker_url: str) -> NoReturn:
                 url=f"{broker_url}/api/fail_job_run",
                 json={
                     "job_run_id": job_run_id,
-                    "job_run_exception_serialized": serialize(exception),
+                    "job_run_exception_serialized": _serialize(exception),
                     "job_run_exception_repr": repr(exception),
                     "worker_id": worker_id,
                 },
@@ -230,8 +342,8 @@ def worker_command(broker_url: str) -> NoReturn:
             continue
 
         function_ = registry[function_key]
-        args = deserialize(response_body["job_args_serialized"])
-        kwargs = deserialize(response_body["job_kwargs_serialized"])
+        args = _deserialize(response_body["job_args_serialized"])
+        kwargs = _deserialize(response_body["job_kwargs_serialized"])
 
         result = None
         try:
@@ -245,7 +357,7 @@ def worker_command(broker_url: str) -> NoReturn:
                 url=f"{broker_url}/api/fail_job_run",
                 json={
                     "job_run_id": job_run_id,
-                    "job_run_exception_serialized": serialize(exception),
+                    "job_run_exception_serialized": _serialize(exception),
                     "job_run_exception_repr": repr(exception),
                     "worker_id": worker_id,
                 },
@@ -265,7 +377,7 @@ def worker_command(broker_url: str) -> NoReturn:
             url=f"{broker_url}/api/complete_job_run",
             json={
                 "job_run_id": job_run_id,
-                "job_run_result_serialized": serialize(result),
+                "job_run_result_serialized": _serialize(result),
                 "job_run_result_repr": repr(result),
                 "worker_id": worker_id,
             },
@@ -278,47 +390,3 @@ def worker_command(broker_url: str) -> NoReturn:
             continue
 
         assert response.ok
-
-
-class ImportFromStringError(Exception):
-    pass
-
-
-def import_registry_from_string(import_str: str) -> "Registry":
-    module_str, _, attrs_str = import_str.partition(":")
-    if not module_str or not attrs_str:
-        raise ImportFromStringError(
-            f"""
-            Your Registry's Import string {import_str} must be in the format
-            '<module>:<attribute>'
-            """
-        )
-
-    try:
-        module = importlib.import_module(module_str)
-    except ImportError as exc:
-        if exc.name != module_str:
-            raise exc from None
-        raise ImportFromStringError(f"Could not import module '{module_str}'")
-
-    instance: Any = module
-    try:
-        for attr_str in attrs_str.split("."):
-            instance = getattr(instance, attr_str)
-    except AttributeError:
-        raise ImportFromStringError(
-            f"Attribute '{attrs_str} not found in module '{module_str}'"
-        )
-
-    return instance
-
-
-def serialize(x: Any) -> str:
-    x_pickled: bytes = pickle.dumps(x, protocol=pickle.HIGHEST_PROTOCOL)
-    x_encoded: bytes = base64.b64encode(x_pickled)
-    return x_encoded.decode()
-
-
-def deserialize(x_encoded: str) -> Any:
-    x_pickled: bytes = base64.b64decode(x_encoded, validate=True)
-    return pickle.loads(x_pickled)

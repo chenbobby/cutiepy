@@ -1,4 +1,5 @@
 import time
+from datetime import datetime, timedelta, timezone
 
 import cutiepy
 
@@ -16,16 +17,18 @@ def fail(x, y):
 
 
 @registry.job
-def three_seconds(x, y):
-    time.sleep(3)
+def half_second(x, y):
+    time.sleep(0.5)
     return x + y
 
 
 if __name__ == "__main__":
-    succeed.enqueue_job(args=[9, 10])
-    fail.enqueue_job(args=[9, 10])
-    three_seconds.enqueue_job(args=[9, 10])
-    three_seconds.enqueue_job(args=[9, 10], job_timeout_ms=1000)
-    three_seconds.enqueue_job(args=[9, 10], job_run_timeout_ms=1000)
-    three_seconds.enqueue_job(args=[9, 10], job_timeout_ms=4000)
-    three_seconds.enqueue_job(args=[9, 10], job_run_timeout_ms=4000)
+    # succeed.enqueue_job(args=[9, 10])
+    # fail.enqueue_job(args=[9, 10])
+    # half_second.enqueue_job(args=[9, 10])
+    # half_second.enqueue_job(args=[9, 10], job_timeout_ms=400)
+    # half_second.enqueue_job(args=[9, 10], job_run_timeout_ms=400)
+    # half_second.enqueue_job(args=[9, 10], job_timeout_ms=1000)
+    # half_second.enqueue_job(args=[9, 10], job_run_timeout_ms=1000)
+    two_seconds_later = datetime.now(timezone.utc) + timedelta(seconds=2)
+    succeed.schedule_job(args=[9, 10], enqueue_after=two_seconds_later)
