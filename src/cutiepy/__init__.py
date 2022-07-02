@@ -81,11 +81,11 @@ class Registry:
         self,
         registered_function: "RegisteredFunction",
         *,
+        enqueue_after: datetime,
         args: List = [],
         kwargs: Dict = {},
         job_timeout_ms: Optional[int] = None,
         job_run_timeout_ms: Optional[int] = None,
-        enqueue_after: datetime,
     ) -> None:
         """
         `schedule_job` schedules a job to be enqueued after `enqueue_after`.
@@ -105,6 +105,7 @@ class Registry:
         response = requests.post(
             url=f"{self._broker_url}/api/schedule_job",
             json={
+                "enqueue_after": enqueue_after.isoformat(),
                 "function_key": function_key,
                 "args_serialized": _serialize(args),
                 "kwargs_serialized": _serialize(kwargs),
@@ -112,7 +113,51 @@ class Registry:
                 "kwargs_repr": {repr(k): repr(v) for k, v in kwargs.items()},
                 "job_timeout_ms": job_timeout_ms,
                 "job_run_timeout_ms": job_run_timeout_ms,
-                "enqueue_after": enqueue_after.isoformat(),
+            },
+        )
+        assert response.ok
+
+    def repeat_job(
+        self,
+        registered_function: "RegisteredFunction",
+        *,
+        start_after: datetime,
+        interval_ms: int,
+        args: List = [],
+        kwargs: Dict = {},
+        job_timeout_ms: Optional[int] = None,
+        job_run_timeout_ms: Optional[int] = None,
+    ) -> None:
+        """
+        `repeat_job` repeats a job. The job is first started after
+        `start_after` and then repeats every `interval_ms`.
+        """
+        function_key = registered_function.function_key
+        if function_key not in self:
+            raise RuntimeError(
+                f"function with key {function_key} is not registered!",
+            )
+
+        assert interval_ms >= 0
+
+        if job_timeout_ms is not None:
+            assert job_timeout_ms >= 0
+
+        if job_run_timeout_ms is not None:
+            assert job_run_timeout_ms >= 0
+
+        response = requests.post(
+            url=f"{self._broker_url}/api/repeat_job",
+            json={
+                "start_after": start_after.isoformat(),
+                "interval_ms": interval_ms,
+                "function_key": function_key,
+                "args_serialized": _serialize(args),
+                "kwargs_serialized": _serialize(kwargs),
+                "args_repr": [repr(arg) for arg in args],
+                "kwargs_repr": {repr(k): repr(v) for k, v in kwargs.items()},
+                "job_timeout_ms": job_timeout_ms,
+                "job_run_timeout_ms": job_run_timeout_ms,
             },
         )
         assert response.ok
@@ -173,11 +218,11 @@ class RegisteredFunction:
     def schedule_job(
         self,
         *,
+        enqueue_after: datetime,
         args: List = [],
         kwargs: Dict = {},
         job_timeout_ms: Optional[int] = None,
         job_run_timeout_ms: Optional[int] = None,
-        enqueue_after: datetime,
     ) -> None:
         """
         `schedule_job` schedules a job to be enqueued after `enqueue_after`.
@@ -190,11 +235,43 @@ class RegisteredFunction:
 
         return self._registry.schedule_job(
             registered_function=self,
+            enqueue_after=enqueue_after,
             args=args,
             kwargs=kwargs,
             job_timeout_ms=job_timeout_ms,
             job_run_timeout_ms=job_run_timeout_ms,
-            enqueue_after=enqueue_after,
+        )
+
+    def repeat_job(
+        self,
+        *,
+        start_after: datetime,
+        interval_ms: int,
+        args: List = [],
+        kwargs: Dict = {},
+        job_timeout_ms: Optional[int] = None,
+        job_run_timeout_ms: Optional[int] = None,
+    ) -> None:
+        """
+        `repeat_job` repeats a job. The job is first started after
+        `start_after` and then repeats every `interval_ms`.
+        """
+        assert interval_ms >= 0
+
+        if job_timeout_ms is not None:
+            assert job_timeout_ms >= 0
+
+        if job_run_timeout_ms is not None:
+            assert job_run_timeout_ms >= 0
+
+        return self._registry.repeat_job(
+            registered_function=self,
+            start_after=start_after,
+            interval_ms=interval_ms,
+            args=args,
+            kwargs=kwargs,
+            job_timeout_ms=job_timeout_ms,
+            job_run_timeout_ms=job_run_timeout_ms,
         )
 
 

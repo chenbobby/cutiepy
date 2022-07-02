@@ -30,5 +30,12 @@ if __name__ == "__main__":
     # half_second.enqueue_job(args=[9, 10], job_run_timeout_ms=400)
     # half_second.enqueue_job(args=[9, 10], job_timeout_ms=1000)
     # half_second.enqueue_job(args=[9, 10], job_run_timeout_ms=1000)
+
     two_seconds_later = datetime.now(timezone.utc) + timedelta(seconds=2)
-    succeed.schedule_job(args=[9, 10], enqueue_after=two_seconds_later)
+    # succeed.schedule_job(args=[9, 10], enqueue_after=two_seconds_later)
+
+    succeed.repeat_job(
+        args=[9, 10],
+        start_after=two_seconds_later,
+        interval_ms=5000,
+    )
