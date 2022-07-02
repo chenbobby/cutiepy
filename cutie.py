@@ -6,14 +6,7 @@ registry = cutiepy.Registry(broker_url="http://localhost:4000")
 
 
 @registry.job
-def add_with_a_super_long_name_(x, y):
-    raise RuntimeError("oopsie woopsie")
-    return x + y
-
-
-@registry.job
-def slow_add(x, y):
-    time.sleep(2)
+def succeed(x, y):
     return x + y
 
 
@@ -22,7 +15,17 @@ def fail(x, y):
     raise RuntimeError(f"Oppsie woopsies. x={x} y={y}")
 
 
+@registry.job
+def three_seconds(x, y):
+    time.sleep(3)
+    return x + y
+
+
 if __name__ == "__main__":
-    add_with_a_super_long_name_.enqueue_job(
-        args=[1, 2],
-    )
+    succeed.enqueue_job(args=[9, 10])
+    fail.enqueue_job(args=[9, 10])
+    three_seconds.enqueue_job(args=[9, 10])
+    three_seconds.enqueue_job(args=[9, 10], job_timeout_ms=1000)
+    three_seconds.enqueue_job(args=[9, 10], job_run_timeout_ms=1000)
+    three_seconds.enqueue_job(args=[9, 10], job_timeout_ms=4000)
+    three_seconds.enqueue_job(args=[9, 10], job_run_timeout_ms=4000)
