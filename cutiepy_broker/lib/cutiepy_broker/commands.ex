@@ -73,6 +73,12 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_result()
   end
 
+  def enqueue_repeating_job(%{repeating_job_id: _} = params) do
+    params
+    |> dispatch_enqueue_repeating_job()
+    |> handle_command_result()
+  end
+
   def fail_job_run(
         %{
           job_run_id: _,
@@ -424,6 +430,47 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
+  defp dispatch_create_deferred_job(%{
+         enqueue_after: enqueue_after,
+         function_key: function_key,
+         args_serialized: args_serialized,
+         kwargs_serialized: kwargs_serialized,
+         args_repr: args_repr,
+         kwargs_repr: kwargs_repr,
+         job_timeout_ms: job_timeout_ms,
+         job_run_timeout_ms: job_run_timeout_ms
+       }) do
+    CutiepyBroker.Repo.transaction(fn ->
+      now = DateTime.utc_now()
+
+      deferred_job = %CutiepyBroker.DeferredJob{
+        id: Ecto.UUID.generate(),
+        updated_at: now,
+        created_at: now,
+        enqueue_after: enqueue_after,
+        function_key: function_key,
+        args_serialized: args_serialized,
+        kwargs_serialized: kwargs_serialized,
+        args_repr: args_repr,
+        kwargs_repr: kwargs_repr,
+        job_timeout_ms: job_timeout_ms,
+        job_run_timeout_ms: job_run_timeout_ms
+      }
+
+      event = %{
+        event_id: Ecto.UUID.generate(),
+        event_timestamp: now,
+        event_type: "created_deferred_job",
+        deferred_job_id: deferred_job.id
+      }
+
+      CutiepyBroker.Repo.insert!(deferred_job)
+      CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
+
+      [event]
+    end)
+  end
+
   defp dispatch_create_repeating_job(%{
          start_after: start_after,
          interval_ms: interval_ms,
@@ -443,6 +490,7 @@ defmodule CutiepyBroker.Commands do
         updated_at: now,
         created_at: now,
         start_after: start_after,
+        enqueue_next_job_after: start_after,
         interval_ms: interval_ms,
         function_key: function_key,
         args_serialized: args_serialized,
@@ -461,6 +509,55 @@ defmodule CutiepyBroker.Commands do
       }
 
       CutiepyBroker.Repo.insert!(repeating_job)
+      CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
+
+      [event]
+    end)
+  end
+
+  defp dispatch_enqueue_deferred_job(%{deferred_job_id: deferred_job_id}) do
+    CutiepyBroker.Repo.transaction(fn ->
+      deferred_job =
+        CutiepyBroker.Repo.one!(
+          from deferred_job in CutiepyBroker.DeferredJob,
+            where: deferred_job.id == ^deferred_job_id,
+            select: deferred_job
+        )
+
+      now = DateTime.utc_now()
+
+      # TODO: Dispatch enqueue_job
+
+      job = %CutiepyBroker.Job{
+        id: Ecto.UUID.generate(),
+        updated_at: now,
+        enqueued_at: now,
+        function_key: deferred_job.function_key,
+        args_serialized: deferred_job.args_serialized,
+        kwargs_serialized: deferred_job.kwargs_serialized,
+        args_repr: deferred_job.args_repr,
+        kwargs_repr: deferred_job.kwargs_repr,
+        job_timeout_ms: deferred_job.job_timeout_ms,
+        job_run_timeout_ms: deferred_job.job_run_timeout_ms,
+        status: "READY"
+      }
+
+      deferred_job_changeset =
+        Ecto.Changeset.change(
+          deferred_job,
+          job_id: job.id
+        )
+
+      # TODO: Change event_type to "enqueued_deferred_job".
+      event = %{
+        event_id: Ecto.UUID.generate(),
+        event_timestamp: now,
+        event_type: "enqueued_job",
+        job_id: job.id
+      }
+
+      CutiepyBroker.Repo.insert!(job)
+      CutiepyBroker.Repo.update!(deferred_job_changeset)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
       [event]
@@ -507,49 +604,51 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
-  defp dispatch_enqueue_deferred_job(%{deferred_job_id: deferred_job_id}) do
+  defp dispatch_enqueue_repeating_job(%{repeating_job_id: repeating_job_id}) do
     CutiepyBroker.Repo.transaction(fn ->
-      deferred_job =
+      repeating_job =
         CutiepyBroker.Repo.one!(
-          from deferred_job in CutiepyBroker.DeferredJob,
-            where: deferred_job.id == ^deferred_job_id,
-            select: deferred_job
+          from repeating_job in CutiepyBroker.RepeatingJob,
+            where: repeating_job.id == ^repeating_job_id,
+            select: repeating_job
         )
 
       now = DateTime.utc_now()
 
-      job = %CutiepyBroker.Job{
-        id: Ecto.UUID.generate(),
-        updated_at: now,
-        enqueued_at: now,
-        function_key: deferred_job.function_key,
-        args_serialized: deferred_job.args_serialized,
-        kwargs_serialized: deferred_job.kwargs_serialized,
-        args_repr: deferred_job.args_repr,
-        kwargs_repr: deferred_job.kwargs_repr,
-        job_timeout_ms: deferred_job.job_timeout_ms,
-        job_run_timeout_ms: deferred_job.job_run_timeout_ms,
-        status: "READY"
-      }
+      {:ok, events} =
+        dispatch_enqueue_job(%{
+          job_function_key: repeating_job.function_key,
+          job_args_serialized: repeating_job.args_serialized,
+          job_kwargs_serialized: repeating_job.kwargs_serialized,
+          job_args_repr: repeating_job.args_repr,
+          job_kwargs_repr: repeating_job.kwargs_repr,
+          job_timeout_ms: repeating_job.job_timeout_ms,
+          job_run_timeout_ms: repeating_job.job_run_timeout_ms
+        })
 
-      deferred_job_changeset =
+      repeating_job_changeset =
         Ecto.Changeset.change(
-          deferred_job,
-          job_id: job.id
+          repeating_job,
+          updated_at: now,
+          enqueue_next_job_after:
+            DateTime.add(
+              repeating_job.enqueue_next_job_after,
+              repeating_job.interval_ms,
+              :millisecond
+            )
         )
 
       event = %{
         event_id: Ecto.UUID.generate(),
         event_timestamp: now,
-        event_type: "enqueued_job",
-        job_id: job.id
+        event_type: "enqueued_repeating_job",
+        repeating_job_id: repeating_job.id
       }
 
-      CutiepyBroker.Repo.insert!(job)
-      CutiepyBroker.Repo.update!(deferred_job_changeset)
+      CutiepyBroker.Repo.update!(repeating_job_changeset)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
-      [event]
+      events ++ [event]
     end)
   end
 
@@ -686,47 +785,6 @@ defmodule CutiepyBroker.Commands do
       }
 
       CutiepyBroker.Repo.insert!(worker)
-      CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
-
-      [event]
-    end)
-  end
-
-  defp dispatch_create_deferred_job(%{
-         enqueue_after: enqueue_after,
-         function_key: function_key,
-         args_serialized: args_serialized,
-         kwargs_serialized: kwargs_serialized,
-         args_repr: args_repr,
-         kwargs_repr: kwargs_repr,
-         job_timeout_ms: job_timeout_ms,
-         job_run_timeout_ms: job_run_timeout_ms
-       }) do
-    CutiepyBroker.Repo.transaction(fn ->
-      now = DateTime.utc_now()
-
-      deferred_job = %CutiepyBroker.DeferredJob{
-        id: Ecto.UUID.generate(),
-        updated_at: now,
-        created_at: now,
-        enqueue_after: enqueue_after,
-        function_key: function_key,
-        args_serialized: args_serialized,
-        kwargs_serialized: kwargs_serialized,
-        args_repr: args_repr,
-        kwargs_repr: kwargs_repr,
-        job_timeout_ms: job_timeout_ms,
-        job_run_timeout_ms: job_run_timeout_ms
-      }
-
-      event = %{
-        event_id: Ecto.UUID.generate(),
-        event_timestamp: now,
-        event_type: "created_deferred_job",
-        deferred_job_id: deferred_job.id
-      }
-
-      CutiepyBroker.Repo.insert!(deferred_job)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
       [event]

@@ -3,11 +3,11 @@ defmodule CutiepyBroker.JobTimer do
   use GenServer
 
   def start_link(init_arg) do
-    GenServer.start_link(__MODULE__, init_arg)
+    GenServer.start_link(__MODULE__, nil, init_arg)
   end
 
   @impl true
-  def init(_init_arg) do
+  def init(nil) do
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "canceled_job")
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "completed_job")
     :ok = Phoenix.PubSub.subscribe(CutiepyBroker.PubSub, "enqueued_job")

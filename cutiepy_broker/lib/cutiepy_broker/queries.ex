@@ -2,6 +2,28 @@ defmodule CutiepyBroker.Queries do
   @moduledoc false
   import Ecto.Query
 
+  def deferred_jobs do
+    CutiepyBroker.Repo.all(
+      from deferred_job in CutiepyBroker.DeferredJob,
+        order_by: [desc: deferred_job.updated_at],
+        limit: 20,
+        select: deferred_job
+    )
+  end
+
+  def deferred_jobs(%{
+        job_id: nil,
+        enqueue_after_upper_bound: enqueue_after_upper_bound
+      }) do
+    CutiepyBroker.Repo.all(
+      from deferred_job in CutiepyBroker.DeferredJob,
+        where: is_nil(deferred_job.job_id),
+        where: deferred_job.enqueue_after < ^enqueue_after_upper_bound,
+        order_by: deferred_job.enqueue_after,
+        select: deferred_job
+    )
+  end
+
   def events do
     CutiepyBroker.Repo.all(
       from event in CutiepyBroker.Event,
@@ -65,25 +87,23 @@ defmodule CutiepyBroker.Queries do
     )
   end
 
-  def deferred_jobs do
+  def repeating_jobs do
     CutiepyBroker.Repo.all(
-      from deferred_job in CutiepyBroker.DeferredJob,
-        order_by: [desc: deferred_job.updated_at],
+      from repeating_job in CutiepyBroker.RepeatingJob,
+        order_by: [desc: repeating_job.updated_at],
         limit: 20,
-        select: deferred_job
+        select: repeating_job
     )
   end
 
-  def deferred_jobs(%{
-        job_id: nil,
-        enqueue_after_upper_bound: enqueue_after_upper_bound
+  def repeating_jobs(%{
+        enqueue_next_job_after_upper_bound: enqueue_next_job_after_upper_bound
       }) do
     CutiepyBroker.Repo.all(
-      from deferred_job in CutiepyBroker.DeferredJob,
-        where: is_nil(deferred_job.job_id),
-        where: deferred_job.enqueue_after < ^enqueue_after_upper_bound,
-        order_by: deferred_job.enqueue_after,
-        select: deferred_job
+      from repeating_job in CutiepyBroker.RepeatingJob,
+        where: repeating_job.enqueue_next_job_after < ^enqueue_next_job_after_upper_bound,
+        order_by: repeating_job.enqueue_next_job_after,
+        select: repeating_job
     )
   end
 

@@ -19,6 +19,8 @@ defmodule CutiepyBroker.Application do
       CutiepyBroker.JobTimer,
       {CutiepyBroker.DeferredJobEnqueuer, name: CutiepyBroker.DeferredJobEnqueuer},
       CutiepyBroker.DeferredJobWatcher,
+      {CutiepyBroker.RepeatingJobEnqueuer, name: CutiepyBroker.RepeatingJobEnqueuer},
+      CutiepyBroker.RepeatingJobWatcher,
       # Start the Endpoint (http/https)
       CutiepyBrokerWeb.Endpoint
     ]
