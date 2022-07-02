@@ -48,12 +48,42 @@ defmodule CutiepyBroker.Queries do
     )
   end
 
+  def job_run(%{job_run_id: job_run_id}) do
+    CutiepyBroker.Repo.one(
+      from job_run in CutiepyBroker.JobRun,
+        where: job_run.id == ^job_run_id,
+        select: job_run
+    )
+  end
+
   def job_runs(%{job_id: job_id}) do
     CutiepyBroker.Repo.all(
       from job_run in CutiepyBroker.JobRun,
         where: job_run.job_id == ^job_id,
         order_by: [desc: job_run.updated_at],
         select: job_run
+    )
+  end
+
+  def scheduled_jobs do
+    CutiepyBroker.Repo.all(
+      from scheduled_job in CutiepyBroker.ScheduledJob,
+        order_by: [desc: scheduled_job.updated_at],
+        limit: 20,
+        select: scheduled_job
+    )
+  end
+
+  def scheduled_jobs(%{
+        job_id: nil,
+        enqueue_after_upper_bound: enqueue_after_upper_bound
+      }) do
+    CutiepyBroker.Repo.all(
+      from scheduled_job in CutiepyBroker.ScheduledJob,
+        where: is_nil(scheduled_job.job_id),
+        where: scheduled_job.enqueue_after < ^enqueue_after_upper_bound,
+        order_by: scheduled_job.enqueue_after,
+        select: scheduled_job
     )
   end
 

@@ -317,11 +317,14 @@ def worker_command(broker_url: str) -> NoReturn:
 
         exception: Optional[Exception] = None
         job_run_id = response_body["job_run_id"]
-        function_key = response_body["job_function_key"]
-        if function_key not in registry:
-            print(f"Error: Callable key {function_key} is not in registry.")
+        job_function_key = response_body["job_function_key"]
+
+        try:
+            function = registry[job_function_key]
+        except KeyError:
+            print(f"Error: Function key {job_function_key} is not in registry.")
             exception = RuntimeError(
-                f"Callable key {function_key} is not in the CutiePy registry."
+                f"Function key {job_function_key} is not in the CutiePy registry."
             )
             response = requests.post(
                 url=f"{broker_url}/api/fail_job_run",
@@ -341,13 +344,14 @@ def worker_command(broker_url: str) -> NoReturn:
             assert response.ok
             continue
 
-        function_ = registry[function_key]
-        args = _deserialize(response_body["job_args_serialized"])
-        kwargs = _deserialize(response_body["job_kwargs_serialized"])
+        job_args_serialized = response_body["job_args_serialized"]
+        job_kwargs_serialized = response_body["job_kwargs_serialized"]
+        args = _deserialize(job_args_serialized)
+        kwargs = _deserialize(job_kwargs_serialized)
 
         result = None
         try:
-            result = function_(*args, **kwargs)
+            result = function(*args, **kwargs)
         except Exception as e:
             exception = e
 

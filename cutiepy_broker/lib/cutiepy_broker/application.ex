@@ -14,10 +14,13 @@ defmodule CutiepyBroker.Application do
       CutiepyBrokerWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: CutiepyBroker.PubSub},
-      # Start the Endpoint (http/https)
-      CutiepyBrokerWeb.Endpoint,
+      # Start CutiepyBroker's GenServers.
+      CutiepyBroker.JobRunTimer,
       CutiepyBroker.JobTimer,
-      CutiepyBroker.JobRunTimer
+      {CutiepyBroker.ScheduledJobEnqueuer, name: CutiepyBroker.ScheduledJobEnqueuer},
+      CutiepyBroker.ScheduledJobWatcher,
+      # Start the Endpoint (http/https)
+      CutiepyBrokerWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
