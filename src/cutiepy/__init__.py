@@ -147,7 +147,7 @@ class Registry:
             assert job_run_timeout_ms >= 0
 
         response = requests.post(
-            url=f"{self._broker_url}/api/repeat_job",
+            url=f"{self._broker_url}/api/create_repeating_job",
             json={
                 "start_after": start_after.isoformat(),
                 "interval_ms": interval_ms,

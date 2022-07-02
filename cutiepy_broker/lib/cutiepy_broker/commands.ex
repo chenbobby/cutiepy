@@ -33,6 +33,24 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_result()
   end
 
+  def create_repeating_job(
+        %{
+          start_after: _,
+          interval_ms: _,
+          function_key: _,
+          args_serialized: _,
+          kwargs_serialized: _,
+          args_repr: _,
+          kwargs_repr: _,
+          job_timeout_ms: _,
+          job_run_timeout_ms: _
+        } = params
+      ) do
+    params
+    |> dispatch_create_repeating_job()
+    |> handle_command_result()
+  end
+
   def enqueue_job(
         %{
           job_function_key: _,
@@ -403,6 +421,49 @@ defmodule CutiepyBroker.Commands do
         "TIMED_OUT" ->
           CutiepyBroker.Repo.rollback(:job_run_timed_out)
       end
+    end)
+  end
+
+  defp dispatch_create_repeating_job(%{
+         start_after: start_after,
+         interval_ms: interval_ms,
+         function_key: function_key,
+         args_serialized: args_serialized,
+         kwargs_serialized: kwargs_serialized,
+         args_repr: args_repr,
+         kwargs_repr: kwargs_repr,
+         job_timeout_ms: job_timeout_ms,
+         job_run_timeout_ms: job_run_timeout_ms
+       }) do
+    CutiepyBroker.Repo.transaction(fn ->
+      now = DateTime.utc_now()
+
+      repeating_job = %CutiepyBroker.RepeatingJob{
+        id: Ecto.UUID.generate(),
+        updated_at: now,
+        created_at: now,
+        start_after: start_after,
+        interval_ms: interval_ms,
+        function_key: function_key,
+        args_serialized: args_serialized,
+        kwargs_serialized: kwargs_serialized,
+        args_repr: args_repr,
+        kwargs_repr: kwargs_repr,
+        job_timeout_ms: job_timeout_ms,
+        job_run_timeout_ms: job_run_timeout_ms
+      }
+
+      event = %{
+        event_id: Ecto.UUID.generate(),
+        event_timestamp: now,
+        event_type: "created_repeating_job",
+        repeating_job_id: repeating_job.id
+      }
+
+      CutiepyBroker.Repo.insert!(repeating_job)
+      CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
+
+      [event]
     end)
   end
 
