@@ -1,4 +1,4 @@
-defmodule CutiepyBroker.ScheduledJobEnqueuer do
+defmodule CutiepyBroker.DeferredJobEnqueuer do
   @moduledoc false
   use GenServer
 
@@ -12,9 +12,9 @@ defmodule CutiepyBroker.ScheduledJobEnqueuer do
   end
 
   @impl true
-  def handle_cast({:enqueue_scheduled_job, scheduled_job_id}, nil) do
+  def handle_cast({:enqueue_deferred_job, deferred_job_id}, nil) do
     {:ok, _events} =
-      CutiepyBroker.Commands.enqueue_scheduled_job(%{scheduled_job_id: scheduled_job_id})
+      CutiepyBroker.Commands.enqueue_deferred_job(%{deferred_job_id: deferred_job_id})
 
     {:noreply, nil}
   end

@@ -98,7 +98,7 @@ You can use CutiePy to define "jobs" (any Python function) and run these jobs on
 
 You can also define:
 
-* [**scheduled jobs**](#TODO-scheduled-jobs-docs) that run at a later time
+* [**deferred jobs**](#TODO-deferred-jobs-docs) that run at a later time
 * [**periodic jobs**](#TODO-periodic-jobs-docs) that run at regular intervals, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
 
 Here is a simple example of how CutiePy is used in practice:

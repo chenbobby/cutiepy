@@ -1,4 +1,4 @@
-defmodule CutiepyBroker.ScheduledJobWatcher do
+defmodule CutiepyBroker.DeferredJobWatcher do
   @moduledoc false
   use GenServer
 
@@ -14,15 +14,15 @@ defmodule CutiepyBroker.ScheduledJobWatcher do
 
   @impl true
   def handle_info(:tick, nil) do
-    CutiepyBroker.Queries.scheduled_jobs(%{
+    CutiepyBroker.Queries.deferred_jobs(%{
       job_id: nil,
       enqueue_after_upper_bound: DateTime.utc_now()
     })
-    |> Enum.map(fn scheduled_job ->
+    |> Enum.map(fn deferred_job ->
       :ok =
         GenServer.cast(
-          CutiepyBroker.ScheduledJobEnqueuer,
-          {:enqueue_scheduled_job, scheduled_job.id}
+          CutiepyBroker.DeferredJobEnqueuer,
+          {:enqueue_deferred_job, deferred_job.id}
         )
     end)
 

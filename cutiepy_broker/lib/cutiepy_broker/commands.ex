@@ -67,9 +67,9 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_result()
   end
 
-  def enqueue_scheduled_job(%{scheduled_job_id: _} = params) do
+  def enqueue_deferred_job(%{deferred_job_id: _} = params) do
     params
-    |> dispatch_enqueue_scheduled_job()
+    |> dispatch_enqueue_deferred_job()
     |> handle_command_result()
   end
 
@@ -92,7 +92,7 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_result()
   end
 
-  def schedule_job(
+  def create_deferred_job(
         %{
           enqueue_after: _,
           function_key: _,
@@ -105,7 +105,7 @@ defmodule CutiepyBroker.Commands do
         } = params
       ) do
     params
-    |> dispatch_schedule_job()
+    |> dispatch_create_deferred_job()
     |> handle_command_result()
   end
 
@@ -507,13 +507,13 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
-  defp dispatch_enqueue_scheduled_job(%{scheduled_job_id: scheduled_job_id}) do
+  defp dispatch_enqueue_deferred_job(%{deferred_job_id: deferred_job_id}) do
     CutiepyBroker.Repo.transaction(fn ->
-      scheduled_job =
+      deferred_job =
         CutiepyBroker.Repo.one!(
-          from scheduled_job in CutiepyBroker.ScheduledJob,
-            where: scheduled_job.id == ^scheduled_job_id,
-            select: scheduled_job
+          from deferred_job in CutiepyBroker.DeferredJob,
+            where: deferred_job.id == ^deferred_job_id,
+            select: deferred_job
         )
 
       now = DateTime.utc_now()
@@ -522,19 +522,19 @@ defmodule CutiepyBroker.Commands do
         id: Ecto.UUID.generate(),
         updated_at: now,
         enqueued_at: now,
-        function_key: scheduled_job.function_key,
-        args_serialized: scheduled_job.args_serialized,
-        kwargs_serialized: scheduled_job.kwargs_serialized,
-        args_repr: scheduled_job.args_repr,
-        kwargs_repr: scheduled_job.kwargs_repr,
-        job_timeout_ms: scheduled_job.job_timeout_ms,
-        job_run_timeout_ms: scheduled_job.job_run_timeout_ms,
+        function_key: deferred_job.function_key,
+        args_serialized: deferred_job.args_serialized,
+        kwargs_serialized: deferred_job.kwargs_serialized,
+        args_repr: deferred_job.args_repr,
+        kwargs_repr: deferred_job.kwargs_repr,
+        job_timeout_ms: deferred_job.job_timeout_ms,
+        job_run_timeout_ms: deferred_job.job_run_timeout_ms,
         status: "READY"
       }
 
-      scheduled_job_changeset =
+      deferred_job_changeset =
         Ecto.Changeset.change(
-          scheduled_job,
+          deferred_job,
           job_id: job.id
         )
 
@@ -546,7 +546,7 @@ defmodule CutiepyBroker.Commands do
       }
 
       CutiepyBroker.Repo.insert!(job)
-      CutiepyBroker.Repo.update!(scheduled_job_changeset)
+      CutiepyBroker.Repo.update!(deferred_job_changeset)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
       [event]
@@ -692,7 +692,7 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
-  defp dispatch_schedule_job(%{
+  defp dispatch_create_deferred_job(%{
          enqueue_after: enqueue_after,
          function_key: function_key,
          args_serialized: args_serialized,
@@ -705,10 +705,10 @@ defmodule CutiepyBroker.Commands do
     CutiepyBroker.Repo.transaction(fn ->
       now = DateTime.utc_now()
 
-      scheduled_job = %CutiepyBroker.ScheduledJob{
+      deferred_job = %CutiepyBroker.DeferredJob{
         id: Ecto.UUID.generate(),
         updated_at: now,
-        scheduled_at: now,
+        created_at: now,
         enqueue_after: enqueue_after,
         function_key: function_key,
         args_serialized: args_serialized,
@@ -722,11 +722,11 @@ defmodule CutiepyBroker.Commands do
       event = %{
         event_id: Ecto.UUID.generate(),
         event_timestamp: now,
-        event_type: "scheduled_job",
-        scheduled_job_id: scheduled_job.id
+        event_type: "created_deferred_job",
+        deferred_job_id: deferred_job.id
       }
 
-      CutiepyBroker.Repo.insert!(scheduled_job)
+      CutiepyBroker.Repo.insert!(deferred_job)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
       [event]

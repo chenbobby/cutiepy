@@ -77,7 +77,7 @@ class Registry:
         )
         assert response.ok
 
-    def schedule_job(
+    def defer_job(
         self,
         registered_function: "RegisteredFunction",
         *,
@@ -88,7 +88,7 @@ class Registry:
         job_run_timeout_ms: Optional[int] = None,
     ) -> None:
         """
-        `schedule_job` schedules a job to be enqueued after `enqueue_after`.
+        `defer_job` will schedule a job to be enqueued after `enqueue_after`.
         """
         function_key = registered_function.function_key
         if function_key not in self:
@@ -103,7 +103,7 @@ class Registry:
             assert job_run_timeout_ms >= 0
 
         response = requests.post(
-            url=f"{self._broker_url}/api/schedule_job",
+            url=f"{self._broker_url}/api/create_deferred_job",
             json={
                 "enqueue_after": enqueue_after.isoformat(),
                 "function_key": function_key,
@@ -215,7 +215,7 @@ class RegisteredFunction:
             job_run_timeout_ms=job_run_timeout_ms,
         )
 
-    def schedule_job(
+    def defer_job(
         self,
         *,
         enqueue_after: datetime,
@@ -225,7 +225,7 @@ class RegisteredFunction:
         job_run_timeout_ms: Optional[int] = None,
     ) -> None:
         """
-        `schedule_job` schedules a job to be enqueued after `enqueue_after`.
+        `defer_job` will schedule a job to be enqueued after `enqueue_after`.
         """
         if job_timeout_ms is not None:
             assert job_timeout_ms >= 0
@@ -233,7 +233,7 @@ class RegisteredFunction:
         if job_run_timeout_ms is not None:
             assert job_run_timeout_ms >= 0
 
-        return self._registry.schedule_job(
+        return self._registry.defer_job(
             registered_function=self,
             enqueue_after=enqueue_after,
             args=args,

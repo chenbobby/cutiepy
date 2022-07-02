@@ -246,7 +246,7 @@ All the code examples in this quickstart guide are publicly available in the Git
 This quickstart guide only scratches the surface of CutiePy's features.
 You can also use CutiePy to create:
 
-* [scheduled jobs](#TODO-scheduled-jobs-docs) to run at a later time
+* [deferred jobs](#TODO-deferred-jobs-docs) to run at a later time
 * [periodic jobs](#TODO-periodic-jobs-docs) to run at regular intervals, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
 
 You can learn more about CutiePy's features in the [**Tutorial**](#).

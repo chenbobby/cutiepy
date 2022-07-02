@@ -1,9 +1,9 @@
-defmodule CutiepyBroker.ScheduledJob do
+defmodule CutiepyBroker.DeferredJob do
   use CutiepyBroker.Schema
 
-  schema "scheduled_job" do
+  schema "deferred_job" do
     field :updated_at, :utc_datetime_usec
-    field :scheduled_at, :utc_datetime_usec
+    field :created_at, :utc_datetime_usec
     field :enqueue_after, :utc_datetime_usec
     field :function_key, :string
     field :args_serialized, :string
