@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # half_second.enqueue_job(args=[9, 10], job_run_timeout_ms=1000)
 
     two_seconds_later = datetime.now(timezone.utc) + timedelta(seconds=2)
-    succeed.defer_job(args=[9, 10], enqueue_after=two_seconds_later)
+    succeed.create_scheduled_job(args=[9, 10], enqueue_after=two_seconds_later)
 
     # succeed.repeat_job(
     #     args=[9, 10],

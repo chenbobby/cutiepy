@@ -2,25 +2,25 @@ defmodule CutiepyBroker.Queries do
   @moduledoc false
   import Ecto.Query
 
-  def deferred_jobs do
+  def scheduled_jobs do
     CutiepyBroker.Repo.all(
-      from deferred_job in CutiepyBroker.DeferredJob,
-        order_by: [desc: deferred_job.updated_at],
+      from scheduled_job in CutiepyBroker.ScheduledJob,
+        order_by: [desc: scheduled_job.updated_at],
         limit: 20,
-        select: deferred_job
+        select: scheduled_job
     )
   end
 
-  def deferred_jobs(%{
+  def scheduled_jobs(%{
         enqueued_at: nil,
         enqueue_after_upper_bound: enqueue_after_upper_bound
       }) do
     CutiepyBroker.Repo.all(
-      from deferred_job in CutiepyBroker.DeferredJob,
-        where: is_nil(deferred_job.enqueued_at),
-        where: deferred_job.enqueue_after < ^enqueue_after_upper_bound,
-        order_by: deferred_job.enqueue_after,
-        select: deferred_job
+      from scheduled_job in CutiepyBroker.ScheduledJob,
+        where: is_nil(scheduled_job.enqueued_at),
+        where: scheduled_job.enqueue_after < ^enqueue_after_upper_bound,
+        order_by: scheduled_job.enqueue_after,
+        select: scheduled_job
     )
   end
 

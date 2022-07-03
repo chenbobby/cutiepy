@@ -19,6 +19,6 @@ defmodule CutiepyBroker.Job do
     field :job_timeout_ms, :integer
     field :job_run_timeout_ms, :integer
 
-    field :deferred_job_id, Ecto.UUID
+    field :scheduled_job_id, Ecto.UUID
   end
 end

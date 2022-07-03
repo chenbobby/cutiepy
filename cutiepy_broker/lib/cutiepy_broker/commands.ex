@@ -67,9 +67,9 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_result()
   end
 
-  def enqueue_deferred_job(%{deferred_job_id: _} = params) do
+  def enqueue_scheduled_job(%{scheduled_job_id: _} = params) do
     params
-    |> dispatch_enqueue_deferred_job()
+    |> dispatch_enqueue_scheduled_job()
     |> handle_command_result()
   end
 
@@ -98,7 +98,7 @@ defmodule CutiepyBroker.Commands do
     |> handle_command_result()
   end
 
-  def create_deferred_job(
+  def create_scheduled_job(
         %{
           enqueue_after: _,
           function_key: _,
@@ -111,7 +111,7 @@ defmodule CutiepyBroker.Commands do
         } = params
       ) do
     params
-    |> dispatch_create_deferred_job()
+    |> dispatch_create_scheduled_job()
     |> handle_command_result()
   end
 
@@ -430,7 +430,7 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
-  defp dispatch_create_deferred_job(%{
+  defp dispatch_create_scheduled_job(%{
          enqueue_after: enqueue_after,
          function_key: function_key,
          args_serialized: args_serialized,
@@ -443,7 +443,7 @@ defmodule CutiepyBroker.Commands do
     CutiepyBroker.Repo.transaction(fn ->
       now = DateTime.utc_now()
 
-      deferred_job = %CutiepyBroker.DeferredJob{
+      scheduled_job = %CutiepyBroker.ScheduledJob{
         id: Ecto.UUID.generate(),
         updated_at: now,
         created_at: now,
@@ -460,11 +460,11 @@ defmodule CutiepyBroker.Commands do
       event = %{
         event_id: Ecto.UUID.generate(),
         event_timestamp: now,
-        event_type: "created_deferred_job",
-        deferred_job_id: deferred_job.id
+        event_type: "created_scheduled_job",
+        scheduled_job_id: scheduled_job.id
       }
 
-      CutiepyBroker.Repo.insert!(deferred_job)
+      CutiepyBroker.Repo.insert!(scheduled_job)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
       [event]
@@ -515,24 +515,24 @@ defmodule CutiepyBroker.Commands do
     end)
   end
 
-  defp dispatch_enqueue_deferred_job(%{deferred_job_id: deferred_job_id}) do
+  defp dispatch_enqueue_scheduled_job(%{scheduled_job_id: scheduled_job_id}) do
     CutiepyBroker.Repo.transaction(fn ->
-      deferred_job =
+      scheduled_job =
         CutiepyBroker.Repo.one!(
-          from deferred_job in CutiepyBroker.DeferredJob,
-            where: deferred_job.id == ^deferred_job_id,
-            select: deferred_job
+          from scheduled_job in CutiepyBroker.ScheduledJob,
+            where: scheduled_job.id == ^scheduled_job_id,
+            select: scheduled_job
         )
 
       {:ok, [enqueued_job_event | _] = events} =
         dispatch_enqueue_job(%{
-          job_function_key: deferred_job.function_key,
-          job_args_serialized: deferred_job.args_serialized,
-          job_kwargs_serialized: deferred_job.kwargs_serialized,
-          job_args_repr: deferred_job.args_repr,
-          job_kwargs_repr: deferred_job.kwargs_repr,
-          job_timeout_ms: deferred_job.job_timeout_ms,
-          job_run_timeout_ms: deferred_job.job_run_timeout_ms
+          job_function_key: scheduled_job.function_key,
+          job_args_serialized: scheduled_job.args_serialized,
+          job_kwargs_serialized: scheduled_job.kwargs_serialized,
+          job_args_repr: scheduled_job.args_repr,
+          job_kwargs_repr: scheduled_job.kwargs_repr,
+          job_timeout_ms: scheduled_job.job_timeout_ms,
+          job_run_timeout_ms: scheduled_job.job_run_timeout_ms
         })
 
       job =
@@ -548,12 +548,12 @@ defmodule CutiepyBroker.Commands do
         Ecto.Changeset.change(
           job,
           updated_at: now,
-          deferred_job_id: deferred_job.id
+          scheduled_job_id: scheduled_job.id
         )
 
-      deferred_job_changeset =
+      scheduled_job_changeset =
         Ecto.Changeset.change(
-          deferred_job,
+          scheduled_job,
           updated_at: now,
           enqueued_at: now
         )
@@ -561,13 +561,13 @@ defmodule CutiepyBroker.Commands do
       event = %{
         event_id: Ecto.UUID.generate(),
         event_timestamp: now,
-        event_type: "enqueued_deferred_job",
-        deferred_job_id: deferred_job.id,
+        event_type: "enqueued_scheduled_job",
+        scheduled_job_id: scheduled_job.id,
         job_id: job.id
       }
 
       CutiepyBroker.Repo.update!(job_changeset)
-      CutiepyBroker.Repo.update!(deferred_job_changeset)
+      CutiepyBroker.Repo.update!(scheduled_job_changeset)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
       events ++ [event]

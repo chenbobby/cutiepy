@@ -1,4 +1,4 @@
-defmodule CutiepyBrokerWeb.CreateDeferredJobController do
+defmodule CutiepyBrokerWeb.CreateScheduledJobController do
   use CutiepyBrokerWeb, :controller
 
   def create(
@@ -16,7 +16,7 @@ defmodule CutiepyBrokerWeb.CreateDeferredJobController do
       ) do
     {:ok, enqueue_after, _} = DateTime.from_iso8601(enqueue_after)
 
-    case CutiepyBroker.Commands.create_deferred_job(%{
+    case CutiepyBroker.Commands.create_scheduled_job(%{
            enqueue_after: enqueue_after,
            function_key: function_key,
            args_serialized: args_serialized,
@@ -26,8 +26,8 @@ defmodule CutiepyBrokerWeb.CreateDeferredJobController do
            job_timeout_ms: job_timeout_ms,
            job_run_timeout_ms: job_run_timeout_ms
          }) do
-      {:ok, [created_deferred_job_event | _]} ->
-        render(conn, "ok.json", deferred_job_id: created_deferred_job_event.deferred_job_id)
+      {:ok, [created_scheduled_job_event | _]} ->
+        render(conn, "ok.json", scheduled_job_id: created_scheduled_job_event.scheduled_job_id)
     end
   end
 end
