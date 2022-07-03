@@ -12,12 +12,12 @@ defmodule CutiepyBroker.Queries do
   end
 
   def deferred_jobs(%{
-        job_id: nil,
+        enqueued_at: nil,
         enqueue_after_upper_bound: enqueue_after_upper_bound
       }) do
     CutiepyBroker.Repo.all(
       from deferred_job in CutiepyBroker.DeferredJob,
-        where: is_nil(deferred_job.job_id),
+        where: is_nil(deferred_job.enqueued_at),
         where: deferred_job.enqueue_after < ^enqueue_after_upper_bound,
         order_by: deferred_job.enqueue_after,
         select: deferred_job

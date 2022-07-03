@@ -15,7 +15,7 @@ defmodule CutiepyBroker.DeferredJobWatcher do
   @impl true
   def handle_info(:tick, nil) do
     CutiepyBroker.Queries.deferred_jobs(%{
-      job_id: nil,
+      enqueued_at: nil,
       enqueue_after_upper_bound: DateTime.utc_now()
     })
     |> Enum.map(fn deferred_job ->

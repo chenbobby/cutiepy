@@ -16,7 +16,7 @@ defmodule CutiepyBroker.JobRun do
     field :exception_serialized, :string
     field :exception_repr, :string
 
-    field :job_id, :string
-    field :worker_id, :string
+    field :job_id, Ecto.UUID
+    field :worker_id, Ecto.UUID
   end
 end
