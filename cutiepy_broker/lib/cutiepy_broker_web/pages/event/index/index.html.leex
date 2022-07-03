@@ -6,59 +6,59 @@
 	<% [] -> %>
 		<p>No events yet! See the documentation on how to create new events for CutiePy.</p>
 	<% events -> %>
-		<div class="max-w-fit overflow-x-auto rounded shadow">
-			<table class="block w-fit text-sm whitespace-nowrap">
-				<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
-					<tr>
-						<th class="min-w-full px-6 py-2">
-							<div>
-								ID
-							</div>
-						</th>
-						<th class="min-w-full px-6 py-2">
-							<div>
-								TIMESTAMP
-							</div>
-						</th>
-						<th class="min-w-full px-6 py-2">
-							<div>
-								TYPE
-							</div>
-						</th>
-						<th class="min-w-full px-6 py-2">
-							<div>
-								RAW DATA
-							</div>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<%= for event <- events do %>
-						<tr class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer">
-							<td class="px-6 py-1.5">
-								<div class="text-xs font-mono group-hover:underline">
+	<div class="_table-container border-2 border-slate-300 overflow-x-auto rounded shadow">
+		<div class="_table table w-full whitespace-nowrap">
+			<div class="_table-header flex border-b-2 border-slate-300 bg-slate-200 text-slate-700 font-bold">
+				<div class="w-24 px-6 py-1.5 text-sm">
+					<span>
+						ID
+					</span>
+				</div>
+				<div class="w-64 px-6 py-1.5 text-sm">
+					<span>
+						TIMESTAMP
+					</span>
+				</div>
+				<div class="w-56 px-6 py-1.5 text-sm">
+					<span>
+						TYPE
+					</span>
+				</div>
+				<div class="grow px-6 py-1.5 text-sm">
+					<span>
+						DATA
+					</span>
+				</div>
+			</div>
+			<div class="_table-body">
+				<%= for event <- events do %>
+					<%= link to: "#", class: "block odd:bg-slate-100" do %>
+						<div class="_table-row group flex hover:bg-slate-200 hover:cursor-pointer">
+							<div class="w-24 px-6 py-1.5">
+								<span class="text-xs font-mono">
 									<%= String.slice(event.id, -6..-1) %>
-								</div>
-							</td>
-							<td class="px-6 py-1.5">
-								<div>
+								</span>
+							</div>
+							<div class="w-64 px-6 py-1.5">
+								<span class="text-sm">
 									<%= Calendar.strftime(event.timestamp, "%c:%f") %>
-								</div>
-							</td>
-							<td class="px-6 py-1.5">
-								<div>
+								</span>
+							</div>
+							<div class="w-56 px-6 py-1.5">
+								<span class="text-xs font-mono">
 									<%= event.type %>
-								</div>
-							</td>
-							<td class="px-6 py-1.5">
-								<div>
+								</span>
+							</div>
+							<div class="grow px-6 py-1.5">
+								<span class="text-xs font-mono">
 									<%= Jason.encode!(event.data) %>
-								</div>
-							</td>
-						</tr>
+								</span>
+							</div>
+						</div>
 					<% end %>
-				</tbody>
-			</table>
+				<% end %>
+			</div>
 		</div>
+	</div>
 	<% end %>
 </div>

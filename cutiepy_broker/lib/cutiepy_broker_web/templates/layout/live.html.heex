@@ -1,5 +1,5 @@
-<div class="flex h-screen w-screen">
-  <nav class="shrink-0 h-full w-48 bg-slate-900">
+<div class="flex h-screen">
+  <nav class="flex-none h-full w-48 bg-slate-900">
     <div class="p-6">
       <div class="text-2xl text-slate-100 bold">
         CutiePy UI
@@ -27,7 +27,7 @@
       </div>
     <% end %>
   </nav>
-  <main class="grow">
+  <main class="flex-1 overflow-auto">
     <div>
       <div phx-click="lv:clear-flash" phx-value-key="info">
         <%= live_flash(@flash, :info) %>
