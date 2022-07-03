@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcutiepy_website=self.webpackChunkcutiepy_website||[]).push([[535],{5641:function(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Introducing CutiePy","permalink":"/blog/2022/07/03/introducing-cutiepy"}]}')}}]);

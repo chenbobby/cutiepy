@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcutiepy_website=self.webpackChunkcutiepy_website||[]).push([[546],{4100:function(e){e.exports=JSON.parse('{"label":"announcements","permalink":"/blog/tags/announcements","allTagsPath":"/blog/tags","count":1}')}}]);
