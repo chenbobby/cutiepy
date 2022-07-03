@@ -19,8 +19,10 @@ defmodule CutiepyBrokerWeb.Router do
 
     get "/", HomePageController, :index
     live "/events", Event.Index
-    live "/jobs", Job.Index
-    live "/jobs/:job_id", Job.Show
+    live "/jobs", JobIndex
+    live "/jobs/:job_id", JobShow
+    live "/scheduled_jobs", ScheduledJobIndex
+    live "/scheduled_jobs/:scheduled_job_id", ScheduledJobShow
     live "/workers", Worker.Index
   end
 

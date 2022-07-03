@@ -2,6 +2,14 @@ defmodule CutiepyBroker.Queries do
   @moduledoc false
   import Ecto.Query
 
+  def scheduled_job(%{scheduled_job_id: scheduled_job_id}) do
+    CutiepyBroker.Repo.one(
+      from scheduled_job in CutiepyBroker.ScheduledJob,
+        where: scheduled_job.id == ^scheduled_job_id,
+        select: scheduled_job
+    )
+  end
+
   def scheduled_jobs do
     CutiepyBroker.Repo.all(
       from scheduled_job in CutiepyBroker.ScheduledJob,

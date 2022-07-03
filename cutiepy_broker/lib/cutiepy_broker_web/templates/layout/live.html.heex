@@ -5,10 +5,17 @@
         CutiePy UI
       </div>
     </div>
-    <%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Index) do %>
+    <%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobIndex) do %>
       <div class="px-6 py-3 hover:bg-slate-700 hover:cursor-pointer">
         <div class="text-lg text-slate-100 bold">
-          Jobs
+          Enqueued Jobs
+        </div>
+      </div>
+    <% end %>
+    <%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.ScheduledJobIndex) do %>
+      <div class="px-6 py-3 hover:bg-slate-700 hover:cursor-pointer">
+        <div class="text-lg text-slate-100 bold">
+          Scheduled Jobs
         </div>
       </div>
     <% end %>

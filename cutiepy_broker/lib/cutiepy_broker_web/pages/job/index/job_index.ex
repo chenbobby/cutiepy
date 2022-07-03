@@ -1,4 +1,4 @@
-defmodule CutiepyBrokerWeb.Job.Index do
+defmodule CutiepyBrokerWeb.JobIndex do
   use CutiepyBrokerWeb, :live_view
 
   def mount(_params, _session, socket) do

@@ -1,4 +1,4 @@
-defmodule CutiepyBrokerWeb.Job.Show do
+defmodule CutiepyBrokerWeb.JobShow do
   use CutiepyBrokerWeb, :live_view
 
   def mount(%{"job_id" => job_id}, _session, socket) do

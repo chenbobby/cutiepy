@@ -6,7 +6,7 @@
 					<h1 class="text-2xl text-slate-800 font-bold">Job not found</h1>
 				</div>
 				<div class="underline hover:text-blue-800">
-					<%= live_redirect "Go back to all jobs", to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Index) %>
+					<%= live_redirect "Go back to all jobs", to: Routes.live_path(@socket, CutiepyBrokerWeb.JobIndex) %>
 				</div>
 			</div>
 		<% job -> %>
@@ -17,7 +17,7 @@
 						class="w-96 p-0 border-0 font-mono focus:border-0 focus:ring-0"
 						onClick="this.select();"
 						type="text"
-						value=<%=job.id %>
+						value={job.id}
 						/>
 				</div>
 				<div class="mb-3">
@@ -140,7 +140,7 @@
 					<%= case @job_runs do %>
 						<% [] -> %>
 							<div>
-								<p>No job runs yet! See the documentation on how to start workers to run this job.<p>
+								<p>No job runs yet! See the documentation on how to start workers to run this job.</p>
 							</div>
 						<% job_runs -> %>
 							<div class="max-w-fit overflow-x-auto rounded shadow">
@@ -227,7 +227,7 @@
 					<%= case @events do %>
 						<% [] -> %>
 							<div>
-								<p>No events yet!<p>
+								<p>No events yet!</p>
 							</div>
 						<% events -> %>
 							<div class="max-w-fit overflow-x-auto rounded shadow">

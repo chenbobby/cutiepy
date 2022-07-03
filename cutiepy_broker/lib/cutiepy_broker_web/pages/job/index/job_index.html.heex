@@ -14,45 +14,36 @@
 					<tr>
 						<th class="px-6 py-2">
 							<span class="text-sm">
-								QUEUE
-							</div>
-						</th>
-						<th class="px-6 py-2">
-							<span class="text-sm">
 								JOB ID
-							</div>
-						</th>
-						<th class="px-6 py-2">
-							<span class="text-sm">
-								FUNCTION KEY
-							</div>
+							</span>
 						</th>
 						<th class="px-6 py-2">
 							<span class="text-sm">
 								STATUS
-							</div>
+							</span>
+						</th>
+						<th class="px-6 py-2">
+							<span class="text-sm">
+								QUEUE
+							</span>
+						</th>
+						<th class="px-6 py-2">
+							<span class="text-sm">
+								FUNCTION KEY
+							</span>
 						</th>
 						<th class="px-6 py-2">
 							<span class="text-sm">
 								LAST UPDATED
-							</div>
+							</span>
 						</th>
 					</tr>
 				</thead>
 				<tbody>
 					<%= for job <- jobs do %>
 						<tr class="group even:bg-slate-100 hover:bg-slate-200">
-							<td class="max-w-xs p-0">
-								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
-												 class: "block px-6 py-1.5 truncate"
-									do %>
-									<span class="text-xs font-mono">
-										default
-									</span>
-								<% end %>
-							</td>
 							<td class="p-0">
-								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
+								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
 												 class: "block px-6 py-1.5"
 									do %>
 									<span class="text-xs font-mono group-hover:underline">
@@ -60,20 +51,10 @@
 									</span>
 								<% end %>
 							</td>
-							<td class="max-w-xs p-0">
-								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
-												 class: "block px-6 py-1.5 truncate"
-									do %>
-									<span class="text-xs font-mono">
-										<%= job.function_key %>
-										<%# 01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789 %>
-									</span>
-								<% end %>
-							</td>
 							<td class="p-0">
 								<%= case job.status do %>
 									<% "READY" -> %>
-										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
+										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
 														class: "block px-6 py-1.5"
 											do %>
 											<div class="w-32 bg-sky-700 rounded text-center">
@@ -83,7 +64,7 @@
 											</div>
 										<% end %>
 									<% "IN_PROGRESS" -> %>
-										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
+										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
 														class: "block px-6 py-1.5"
 											do %>
 											<div class="w-32 bg-violet-600 rounded text-center">
@@ -93,7 +74,7 @@
 											</div>
 										<% end %>
 									<% "SUCCESS" -> %>
-										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
+										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
 														class: "block px-6 py-1.5"
 											do %>
 											<div class="w-32 bg-emerald-700 rounded text-center">
@@ -103,7 +84,7 @@
 											</div>
 										<% end %>
 									<% "FAILED" -> %>
-										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
+										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
 														class: "block px-6 py-1.5"
 											do %>
 											<div class="w-32 bg-red-700 rounded text-center">
@@ -113,7 +94,7 @@
 											</div>
 										<% end %>
 									<% "CANCELED" -> %>
-										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
+										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
 														class: "block px-6 py-1.5"
 											do %>
 											<div class="w-32 bg-slate-600 rounded text-center">
@@ -123,7 +104,7 @@
 											</div>
 										<% end %>
 									<% "TIMED_OUT" -> %>
-										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
+										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
 														class: "block px-6 py-1.5"
 											do %>
 											<div class="w-32 bg-yellow-700 rounded text-center">
@@ -133,19 +114,37 @@
 											</div>
 										<% end %>
 									<% _ -> %>
-										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
+										<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
 														class: "block px-6 py-1.5"
 											do %>
 											<div class="w-32 bg-slate-600 rounded text-center">
-												<span class="text-sm text-slate-50 align-mid align-text-topdle">
+												<span class="text-sm text-slate-50 align-text-top">
 													unknown status
 												</span>
 											</div>
 										<% end %>
 								<% end %>
 							</td>
+							<td class="max-w-xs p-0">
+								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
+												 class: "block px-6 py-1.5 truncate"
+									do %>
+									<span class="text-xs font-mono">
+										default
+									</span>
+								<% end %>
+							</td>
+							<td class="max-w-xs p-0">
+								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
+												 class: "block px-6 py-1.5 truncate"
+									do %>
+									<span class="text-xs font-mono">
+										<%= job.function_key %>
+									</span>
+								<% end %>
+							</td>
 							<td class="p-0">
-								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Job.Show, job),
+								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.JobShow, job),
 												class: "block px-6 py-1.5"
 									do %>
 									<span class="text-sm">
