@@ -1,7 +1,7 @@
-defmodule CutiepyBroker.RepeatingJob do
+defmodule CutiepyBroker.RecurringJob do
   use CutiepyBroker.Schema
 
-  schema "repeating_job" do
+  schema "recurring_job" do
     field :updated_at, :utc_datetime_usec
     field :created_at, :utc_datetime_usec
 

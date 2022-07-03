@@ -118,7 +118,7 @@ class Registry:
         )
         assert response.ok
 
-    def repeat_job(
+    def create_recurring_job(
         self,
         registered_function: "RegisteredFunction",
         *,
@@ -130,8 +130,9 @@ class Registry:
         job_run_timeout_ms: Optional[int] = None,
     ) -> None:
         """
-        `repeat_job` repeats a job. The job is first started after
-        `start_after` and then repeats every `interval_ms`.
+        `create_recurring_job` creates a recurring job. The job will be first
+        started after `start_after` and then create_recurrings every
+        `interval_ms`.
         """
         function_key = registered_function.function_key
         if function_key not in self:
@@ -148,7 +149,7 @@ class Registry:
             assert job_run_timeout_ms >= 0
 
         response = requests.post(
-            url=f"{self._broker_url}/api/create_repeating_job",
+            url=f"{self._broker_url}/api/create_recurring_job",
             json={
                 "start_after": start_after.isoformat(),
                 "interval_ms": interval_ms,
@@ -244,7 +245,7 @@ class RegisteredFunction:
             job_run_timeout_ms=job_run_timeout_ms,
         )
 
-    def repeat_job(
+    def create_recurring_job(
         self,
         *,
         start_after: datetime,
@@ -255,8 +256,9 @@ class RegisteredFunction:
         job_run_timeout_ms: Optional[int] = None,
     ) -> None:
         """
-        `repeat_job` repeats a job. The job is first started after
-        `start_after` and then repeats every `interval_ms`.
+        `create_recurring_job` creates a recurring job. The job will be first
+        started after `start_after` and then create_recurrings every
+        `interval_ms`.
         """
         assert interval_ms >= 0
 
@@ -266,7 +268,7 @@ class RegisteredFunction:
         if job_run_timeout_ms is not None:
             assert job_run_timeout_ms >= 0
 
-        return self._registry.repeat_job(
+        return self._registry.create_recurring_job(
             registered_function=self,
             start_after=start_after,
             interval_ms=interval_ms,

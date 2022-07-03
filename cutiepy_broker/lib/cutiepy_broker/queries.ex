@@ -87,23 +87,23 @@ defmodule CutiepyBroker.Queries do
     )
   end
 
-  def repeating_jobs do
+  def recurring_jobs do
     CutiepyBroker.Repo.all(
-      from repeating_job in CutiepyBroker.RepeatingJob,
-        order_by: [desc: repeating_job.updated_at],
+      from recurring_job in CutiepyBroker.RecurringJob,
+        order_by: [desc: recurring_job.updated_at],
         limit: 20,
-        select: repeating_job
+        select: recurring_job
     )
   end
 
-  def repeating_jobs(%{
+  def recurring_jobs(%{
         enqueue_next_job_after_upper_bound: enqueue_next_job_after_upper_bound
       }) do
     CutiepyBroker.Repo.all(
-      from repeating_job in CutiepyBroker.RepeatingJob,
-        where: repeating_job.enqueue_next_job_after < ^enqueue_next_job_after_upper_bound,
-        order_by: repeating_job.enqueue_next_job_after,
-        select: repeating_job
+      from recurring_job in CutiepyBroker.RecurringJob,
+        where: recurring_job.enqueue_next_job_after < ^enqueue_next_job_after_upper_bound,
+        order_by: recurring_job.enqueue_next_job_after,
+        select: recurring_job
     )
   end
 

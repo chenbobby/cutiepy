@@ -1,4 +1,4 @@
-defmodule CutiepyBroker.RepeatingJobWatcher do
+defmodule CutiepyBroker.RecurringJobWatcher do
   @moduledoc false
   use GenServer
 
@@ -14,12 +14,12 @@ defmodule CutiepyBroker.RepeatingJobWatcher do
 
   @impl true
   def handle_info(:tick, nil) do
-    CutiepyBroker.Queries.repeating_jobs(%{enqueue_next_job_after_upper_bound: DateTime.utc_now()})
-    |> Enum.map(fn repeating_job ->
+    CutiepyBroker.Queries.recurring_jobs(%{enqueue_next_job_after_upper_bound: DateTime.utc_now()})
+    |> Enum.map(fn recurring_job ->
       :ok =
         GenServer.cast(
-          CutiepyBroker.RepeatingJobEnqueuer,
-          {:enqueue_repeating_job, repeating_job.id}
+          CutiepyBroker.RecurringJobEnqueuer,
+          {:enqueue_recurring_job, recurring_job.id}
         )
     end)
 

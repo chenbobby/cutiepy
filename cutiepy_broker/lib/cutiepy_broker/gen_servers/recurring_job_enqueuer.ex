@@ -1,4 +1,4 @@
-defmodule CutiepyBroker.RepeatingJobEnqueuer do
+defmodule CutiepyBroker.RecurringJobEnqueuer do
   @moduledoc false
   use GenServer
 
@@ -12,9 +12,9 @@ defmodule CutiepyBroker.RepeatingJobEnqueuer do
   end
 
   @impl true
-  def handle_cast({:enqueue_repeating_job, repeating_job_id}, nil) do
+  def handle_cast({:enqueue_recurring_job, recurring_job_id}, nil) do
     {:ok, _events} =
-      CutiepyBroker.Commands.enqueue_repeating_job(%{repeating_job_id: repeating_job_id})
+      CutiepyBroker.Commands.enqueue_recurring_job(%{recurring_job_id: recurring_job_id})
 
     {:noreply, nil}
   end
