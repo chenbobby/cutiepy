@@ -4,6 +4,7 @@ defmodule CutiepyBroker.RecurringJob do
   schema "recurring_job" do
     field :updated_at, :utc_datetime_usec
     field :created_at, :utc_datetime_usec
+    field :last_enqueued_at, :utc_datetime_usec
 
     field :start_after, :utc_datetime_usec
     field :interval_ms, :integer

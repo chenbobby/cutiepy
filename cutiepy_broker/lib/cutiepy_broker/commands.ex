@@ -623,9 +623,7 @@ defmodule CutiepyBroker.Commands do
             select: recurring_job
         )
 
-      now = DateTime.utc_now()
-
-      {:ok, events} =
+      {:ok, [enqueued_job_event | _] = events} =
         dispatch_enqueue_job(%{
           job_function_key: recurring_job.function_key,
           job_args_serialized: recurring_job.args_serialized,
@@ -636,10 +634,27 @@ defmodule CutiepyBroker.Commands do
           job_run_timeout_ms: recurring_job.job_run_timeout_ms
         })
 
+      now = DateTime.utc_now()
+
+      job =
+        CutiepyBroker.Repo.one!(
+          from job in CutiepyBroker.Job,
+            where: job.id == ^enqueued_job_event.job_id,
+            select: job
+        )
+
+      job_changeset =
+        Ecto.Changeset.change(
+          job,
+          updated_at: now,
+          recurring_job_id: recurring_job.id
+        )
+
       recurring_job_changeset =
         Ecto.Changeset.change(
           recurring_job,
           updated_at: now,
+          last_enqueued_at: now,
           enqueue_next_job_after:
             DateTime.add(
               recurring_job.enqueue_next_job_after,
@@ -652,9 +667,11 @@ defmodule CutiepyBroker.Commands do
         event_id: Ecto.UUID.generate(),
         event_timestamp: now,
         event_type: "enqueued_recurring_job",
-        recurring_job_id: recurring_job.id
+        recurring_job_id: recurring_job.id,
+        job_id: job.id
       }
 
+      CutiepyBroker.Repo.update!(job_changeset)
       CutiepyBroker.Repo.update!(recurring_job_changeset)
       CutiepyBroker.Repo.insert!(CutiepyBroker.Event.from_map(event))
 
