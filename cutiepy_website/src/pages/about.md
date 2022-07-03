@@ -4,18 +4,15 @@ Welcome to CutiePy! This page contains background information about the CutiePy 
 
 ## What is CutiePy?
 
-CutiePy is an **open source, fully-featured job queue for Python workloads**.
+CutiePy is an **open source job queue for Python**. CutiePy allows you to:
+
+* [**enqueue a job**](#TODO-enqueue-job-docs) to run immediately
+* [**create scheduled jobs**](#TODO-scheduledj-jobs-docs) that will run once at a later time
+* [**create recurring jobs**](#TODO-recurring-jobs-docs) that will run periodically at a fixed interval, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
 
 CutiePy ships with a **real-time monitoring dashboard** to help you track your jobs and workers.
 
 ![CutiePy UI Screenshot](#TODO)
-
-You can use CutiePy to define "jobs" (any Python function) and run these jobs on background workers.
-
-You can also define:
-
-* [**deferred jobs**](#TODO-deferred-jobs-docs) that run at a later time
-* [**periodic jobs**](#TODO-periodic-jobs-docs) that run at regular intervals, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
 
 You can learn more about CutiePy in our [**documentation**](/docs).
 

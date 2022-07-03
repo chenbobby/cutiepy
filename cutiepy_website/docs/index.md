@@ -1,15 +1,20 @@
 ---
 sidebar_position: 1
-title: "Home"
+title: Home
 ---
+
 import Link from '@docusaurus/Link';
 
 # Documentation
 
-**Welcome to the CutiePy documentation.**
+**Welcome to the official CutiePy documentation.**
 This is a collection of resources to help you get started with CutiePy.
 
-## Start Here
+## Disclaimer
+
+CutiePy is not ready for use in production.
+
+<!-- ## Start Here
 
 Here are some high-level resources to help you learn more about CutiePy.
 
@@ -84,24 +89,21 @@ Here are some high-level resources to help you learn more about CutiePy.
     <span style={{"font-style": "italic"}}>
         Security and performance considerations for production environments
     </span>
-</p>
+</p> -->
 
 ## What is CutiePy?
 
-CutiePy is an **open source, fully-featured job queue for Python workloads**.
+CutiePy is an **open source job queue for Python**. CutiePy allows you to:
+
+* [**enqueue a job**](#TODO-enqueue-job-docs) to run immediately
+* [**create scheduled jobs**](#TODO-scheduledj-jobs-docs) that will run once at a later time
+* [**create recurring jobs**](#TODO-recurring-jobs-docs) that will run periodically at a fixed interval, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
 
 CutiePy ships with a **real-time monitoring dashboard** to help you track your jobs and workers.
 
 ![CutiePy UI Screenshot](#TODO)
 
-You can use CutiePy to define "jobs" (any Python function) and run these jobs on background workers.
-
-You can also define:
-
-* [**deferred jobs**](#TODO-deferred-jobs-docs) that run at a later time
-* [**periodic jobs**](#TODO-periodic-jobs-docs) that run at regular intervals, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
-
-Here is a simple example of how CutiePy is used in practice:
+### Example
 
 ``` python title="cutie.py"
 import cutiepy
@@ -111,15 +113,14 @@ registry = cutiepy.Registry()
 
 @registry.job
 def bake_a_pie(flavor, recipient):
-    time.sleep(3)
+    time.sleep(3) # Simulate a long-running workload
     pie = f"{flavor} pie for {recipient}"
     print(f"Your {pie} is ready!")
     return pie
 
 
-# Enqueue your job to run on a background worker.
+# Enqueue your job to run on a worker.
 bake_a_pie.enqueue_job(args=["apple", "Alice"])
-
 ```
 
 ``` console title="Output"
@@ -127,11 +128,13 @@ Printed to stdout: "Your apple pie for Alice is ready!"
 Return value:      "apple pie for Alice"
 ```
 
+## Learn CutiePy
+
 Visit our [**Quickstart**](/docs/quickstart) guide to get up and running with CutiePy in less than 5 minutes.
 
-You can also read our [**Tutorial**](/docs/tutorial) to learn about CutiePy features and build an X with CutiePy.
+<!-- You can also read our [**Tutorial**](/docs/tutorial) to learn about CutiePy features and build an X with CutiePy. -->
 
-### Use Cases
+<!-- ### Use Cases
 CutiePy is flexible and scalable for many use cases:
 
 * running background jobs in [Django](https://www.djangoproject.com/), [Flask](https://flask.palletsprojects.com/), or [FastAPI](https://fastapi.tiangolo.com/) web apps
@@ -152,4 +155,4 @@ CutiePy includes a dashboard for monitoring tasks and workers. The dashboard run
 
 Use the command `cutiepy dashboard` to run the CutiePy dashboard server.
 
-[TODO] Screenshot of dashboard
+[TODO] Screenshot of dashboard -->

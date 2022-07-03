@@ -1,7 +1,8 @@
 ---
 sidebar_position: 2
-title: "Quickstart"
+title: Quickstart
 ---
+
 import Link from '@docusaurus/Link';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
