@@ -4,15 +4,15 @@ Welcome to CutiePy! This page contains background information about the CutiePy 
 
 ## What is CutiePy?
 
-CutiePy is an **open source job queue for Python**. CutiePy allows you to:
+CutiePy is an **open source job scheduler for Python**. CutiePy allows you to:
 
-* [**enqueue a job**](#TODO-enqueue-job-docs) to run immediately
-* [**create scheduled jobs**](#TODO-scheduledj-jobs-docs) that will run once at a later time
-* [**create recurring jobs**](#TODO-recurring-jobs-docs) that will run periodically at a fixed interval, like a [`cron`](https://en.wikipedia.org/wiki/Cron) job.
+* **enqueue a job** to run immediately
+* **create scheduled jobs** that will run once at a later time
+* **create recurring jobs** that will run periodically at a fixed interval, like a [cron](https://en.wikipedia.org/wiki/Cron) job.
 
 CutiePy ships with a **real-time monitoring dashboard** to help you track your jobs and workers.
 
-![CutiePy UI Screenshot](#TODO)
+![CutiePy UI Screenshot](/img/cutiepy_ui.png)
 
 You can learn more about CutiePy in our [**documentation**](/docs).
 
@@ -39,6 +39,20 @@ Beyond web applications, CutiePy is also used in research for parallelizing data
 
 ## How is CutiePy licensed?
 
-CutiePy is open source, released under the **Apache License 2.0**.
+CutiePy is open source, released under the [**Apache-2.0 license**](https://opensource.org/licenses/Apache-2.0).
+
+My entire career has been built on the shoulders of generous software developers who release their code with permissive licenses.
+People have helped me.
+I want to carry it forward.
+You are welcome to use CutiePy for hobby projects and commercial purposes.
 
 The source code of CutiePy is available in the official GitHub repository [**chenbobby/cutiepy**](https://github.com/chenbobby/cutiepy).
+
+## How can I contribute to CutiePy?
+
+CutiePy is currently not open to contribution.
+I need some time to think about copyright for outside contributions.
+I will also need to write a Contributor Licensing Agreement (CLA).
+Until then, CutiePy will be closed to contributions.
+
+If you still want to provide feedback to CutiePy, please open a [GitHub Discussion](https://github.com/chenbobby/cutiepy/discussions) for public feedback, or email me at [chenbobby@fastmail.com](mailto:chenbobby@fastmail.com] for private feedback.

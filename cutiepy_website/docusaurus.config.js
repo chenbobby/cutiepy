@@ -7,7 +7,6 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 /** @type {import("@docusaurus/types").Config} */
 const config = {
   title: "CutiePy",
-  tagline: "A batteries-included job queue for Python",
   url: "https://cutiepy.org",
   baseUrl: "/",
   favicon: "img/favicon.ico",
@@ -71,12 +70,12 @@ const config = {
             label: "Documentation",
           },
           { to: "/blog", label: "Blog", position: "left" },
+          { to: "/about", label: "About", position: "left" },
           {
             href: "https://github.com/chenbobby/cutiepy",
             label: "Source Code",
-            position: "right",
+            position: "left",
           },
-          { to: "/about", label: "About", position: "right" },
         ],
       },
       footer: {
@@ -90,7 +89,7 @@ const config = {
                 to: "/docs",
               },
               {
-                label: "Quickstart Guide",
+                label: "Quickstart",
                 to: "/docs/quickstart",
               },
               {
@@ -112,15 +111,7 @@ const config = {
             items: [
               {
                 label: "GitHub Discussions",
-                to: "https://github.com/chenbobby/cutiepy/discussions"
-              },
-              {
-                label: "Slack",
-                href: "#",
-              },
-              {
-                label: "Twitter",
-                href: "#",
+                href: "https://github.com/chenbobby/cutiepy/discussions"
               },
             ],
           },
@@ -128,12 +119,12 @@ const config = {
             title: "Learn More",
             items: [
               {
-                label: "Blog",
-                to: "/blog",
-              },
-              {
                 label: "About",
                 to: "/about",
+              },
+              {
+                label: "Blog",
+                to: "/blog",
               },
               {
                 label: "Source Code",
