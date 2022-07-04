@@ -23,4 +23,4 @@ I need some time to think about copyright for outside contributions.
 I will also need to write a Contributor Licensing Agreement (CLA).
 Until then, CutiePy will be closed to contributions.
 
-If you still want to provide feedback to CutiePy, please open a [GitHub Discussion](https://github.com/chenbobby/cutiepy/discussions) for public feedback, or email me at [chenbobby@fastmail.com](mailto:chenbobby@fastmail.com] for private feedback.
+If you still want to provide feedback to CutiePy, please open a [GitHub Discussion](https://github.com/chenbobby/cutiepy/discussions) for public feedback, or email me at <a href="mailto:chenbobby@fastmail.com">chenbobby@fastmail.com</a> for private feedback.
