@@ -1,0 +1,82 @@
+<div class="pt-16 px-8">
+	<div class="mb-4 px-6">
+		<h1 class="text-xl text-slate-800 font-bold">
+			Scheduled Jobs
+		</h1>
+	</div>
+	<%= case @scheduled_jobs do %>
+	<% [] -> %>
+		<p>No scheduled jobs yet! See the documentation on how to create scheduled jobs.</p>
+	<% scheduled_jobs -> %>
+		<div class="max-w-screen-lg border-2 border-slate-300 overflow-x-auto rounded shadow">
+			<table class="w-full whitespace-nowrap">
+				<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
+					<tr>
+						<th class="px-6 py-2">
+							<span class="text-sm">
+								SCHEDULED JOB ID
+							</span>
+						</th>
+						<th class="px-6 py-2">
+							<span class="text-sm">
+								FUNCTION KEY
+							</span>
+						</th>
+						<th class="px-6 py-2">
+							<span class="text-sm">
+								ENQUEUE AFTER
+							</span>
+						</th>
+						<th class="px-6 py-2">
+							<span class="text-sm">
+								UPDATED AT
+							</span>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<%= for scheduled_job <- scheduled_jobs do %>
+						<tr class="group even:bg-slate-100 hover:bg-slate-200">
+							<td class="p-0">
+								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.ScheduledJobShow, scheduled_job),
+												 class: "block px-6 py-1.5"
+									do %>
+									<span class="text-xs font-mono group-hover:underline">
+										<%= String.slice(scheduled_job.id, -6..-1) %>
+									</span>
+								<% end %>
+							</td>
+							<td class="max-w-xs p-0">
+								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.ScheduledJobShow, scheduled_job),
+												 class: "block px-6 py-1.5 truncate"
+									do %>
+									<span class="text-xs font-mono">
+										<%= scheduled_job.function_key %>
+									</span>
+								<% end %>
+							</td>
+							<td class="p-0">
+								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.ScheduledJobShow, scheduled_job),
+												class: "block px-6 py-1.5"
+									do %>
+									<span class="text-sm">
+										<%= Calendar.strftime(scheduled_job.enqueue_after, "%c:%f") %>
+									</span>
+								<% end %>
+							</td>
+							<td class="p-0">
+								<%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.ScheduledJobShow, scheduled_job),
+												class: "block px-6 py-1.5"
+									do %>
+									<span class="text-sm">
+										<%= Calendar.strftime(scheduled_job.updated_at, "%c:%f") %>
+									</span>
+								<% end %>
+							</td>
+						</tr>
+					<% end %>
+				</tbody>
+			</table>
+		</div>
+	<% end %>
+</div>

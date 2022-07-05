@@ -2,36 +2,6 @@ defmodule CutiepyBroker.Queries do
   @moduledoc false
   import Ecto.Query
 
-  def scheduled_job(%{scheduled_job_id: scheduled_job_id}) do
-    CutiepyBroker.Repo.one(
-      from scheduled_job in CutiepyBroker.ScheduledJob,
-        where: scheduled_job.id == ^scheduled_job_id,
-        select: scheduled_job
-    )
-  end
-
-  def scheduled_jobs do
-    CutiepyBroker.Repo.all(
-      from scheduled_job in CutiepyBroker.ScheduledJob,
-        order_by: [desc: scheduled_job.updated_at],
-        limit: 20,
-        select: scheduled_job
-    )
-  end
-
-  def scheduled_jobs(%{
-        enqueued_at: nil,
-        enqueue_after_upper_bound: enqueue_after_upper_bound
-      }) do
-    CutiepyBroker.Repo.all(
-      from scheduled_job in CutiepyBroker.ScheduledJob,
-        where: is_nil(scheduled_job.enqueued_at),
-        where: scheduled_job.enqueue_after < ^enqueue_after_upper_bound,
-        order_by: scheduled_job.enqueue_after,
-        select: scheduled_job
-    )
-  end
-
   def events do
     CutiepyBroker.Repo.all(
       from event in CutiepyBroker.Event,
@@ -104,6 +74,14 @@ defmodule CutiepyBroker.Queries do
     )
   end
 
+  def recurring_job(%{recurring_job_id: recurring_job_id}) do
+    CutiepyBroker.Repo.one(
+      from recurring_job in CutiepyBroker.RecurringJob,
+        where: recurring_job.id == ^recurring_job_id,
+        select: recurring_job
+    )
+  end
+
   def recurring_jobs(%{
         enqueue_next_job_after_upper_bound: enqueue_next_job_after_upper_bound
       }) do
@@ -112,6 +90,36 @@ defmodule CutiepyBroker.Queries do
         where: recurring_job.enqueue_next_job_after < ^enqueue_next_job_after_upper_bound,
         order_by: recurring_job.enqueue_next_job_after,
         select: recurring_job
+    )
+  end
+
+  def scheduled_jobs do
+    CutiepyBroker.Repo.all(
+      from scheduled_job in CutiepyBroker.ScheduledJob,
+        order_by: [desc: scheduled_job.updated_at],
+        limit: 20,
+        select: scheduled_job
+    )
+  end
+
+  def scheduled_job(%{scheduled_job_id: scheduled_job_id}) do
+    CutiepyBroker.Repo.one(
+      from scheduled_job in CutiepyBroker.ScheduledJob,
+        where: scheduled_job.id == ^scheduled_job_id,
+        select: scheduled_job
+    )
+  end
+
+  def scheduled_jobs(%{
+        enqueued_at: nil,
+        enqueue_after_upper_bound: enqueue_after_upper_bound
+      }) do
+    CutiepyBroker.Repo.all(
+      from scheduled_job in CutiepyBroker.ScheduledJob,
+        where: is_nil(scheduled_job.enqueued_at),
+        where: scheduled_job.enqueue_after < ^enqueue_after_upper_bound,
+        order_by: scheduled_job.enqueue_after,
+        select: scheduled_job
     )
   end
 

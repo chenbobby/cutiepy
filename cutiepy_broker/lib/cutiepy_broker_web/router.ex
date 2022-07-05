@@ -21,6 +21,8 @@ defmodule CutiepyBrokerWeb.Router do
     live "/events", Event.Index
     live "/jobs", JobIndex
     live "/jobs/:job_id", JobShow
+    live "/recurring_jobs", RecurringJobIndex
+    live "/recurring_jobs/:recurring_job_id", RecurringJobShow
     live "/scheduled_jobs", ScheduledJobIndex
     live "/scheduled_jobs/:scheduled_job_id", ScheduledJobShow
     live "/workers", Worker.Index

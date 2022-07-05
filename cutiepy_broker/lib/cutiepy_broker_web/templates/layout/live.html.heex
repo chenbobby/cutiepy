@@ -19,6 +19,13 @@
         </div>
       </div>
     <% end %>
+    <%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.RecurringJobIndex) do %>
+      <div class="px-6 py-3 hover:bg-slate-700 hover:cursor-pointer">
+        <div class="text-lg text-slate-100 bold">
+          Recurring Jobs
+        </div>
+      </div>
+    <% end %>
     <%= link to: Routes.live_path(@socket, CutiepyBrokerWeb.Worker.Index) do %>
       <div class="px-6 py-3 hover:bg-slate-700 hover:cursor-pointer">
         <div class="text-lg text-slate-100 bold">

@@ -8,7 +8,7 @@ defmodule CutiepyBrokerWeb.ScheduledJobIndex do
   end
 
   def handle_info(%{event_type: "created_scheduled_job"}, socket) do
-    jobs = CutiepyBroker.Queries.jobs()
-    {:noreply, assign(socket, jobs: jobs)}
+    scheduled_jobs = CutiepyBroker.Queries.scheduled_jobs()
+    {:noreply, assign(socket, scheduled_jobs: scheduled_jobs)}
   end
 end
