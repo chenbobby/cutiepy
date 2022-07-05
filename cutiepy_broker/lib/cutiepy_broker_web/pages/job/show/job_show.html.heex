@@ -18,6 +18,8 @@
 						onClick="this.select();"
 						type="text"
 						value={job.id}
+						spellcheck="false"
+						readonly
 						/>
 				</div>
 				<div class="mb-3">
@@ -55,35 +57,41 @@
 					<div class="mb-2">
 						<h2 class="text-lg text-slate-800 font-bold">Positional Arguments</h2>
 					</div>
-					<div class="max-w-fit overflow-x-auto rounded shadow">
-						<table class="block w-fit text-sm whitespace-nowrap">
-							<thead class="bg-slate-200 border-b-2 border-slate-300 text-slate-700">
+					<div class="max-w-lg border-2 border-slate-300 overflow-x-auto rounded shadow">
+						<table class="w-full whitespace-nowrap">
+							<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
 								<tr>
-									<th class="min-w-full px-6 py-1.5">
-										<div class="text-right">
-											POSITION
+									<th class="p-0">
+										<div class="px-6 py-2">
+											<span class="text-sm">
+												POSITION
+											</span>
 										</div>
 									</th>
-									<th class="min-w-full px-6 py-1.5">
-										<div class="text-left">
-											VALUE
+									<th class="p-0">
+										<div class="px-6 py-2">
+											<span class="text-sm">
+												VALUE
+											</span>
 										</div>
 									</th>
 								</tr>
 							</thead>
-							<tbody class="text-xs font-mono">
-								<%= for {arg_repr, index} <- Enum.with_index(job.args_repr) do %>
-									<tr
-										class="odd:bg-white even:bg-slate-100"
-										>
-										<td class="px-6 py-1.5">
-											<div class="text-right">
-												<%= index %>
+							<tbody>
+								<%= for {arg_value_repr, arg_index} <- Enum.with_index(job.args_repr) do %>
+									<tr class="even:bg-slate-100">
+										<td class=" p-0">
+											<div class="px-6 py-1.5">
+												<span class="text-xs font-mono">
+													<%= arg_index %>
+												</span>
 											</div>
 										</td>
-										<td class="px-6 py-1.5">
-											<div>
-												<%= arg_repr %>
+										<td class="p-0">
+											<div class="px-6 py-1.5">
+												<span class="text-xs font-mono">
+													<%= arg_value_repr %>
+												</span>
 											</div>
 										</td>
 									</tr>
@@ -96,35 +104,41 @@
 					<div class="mb-2">
 						<h2 class="text-lg text-slate-800 font-bold">Keyword Arguments</h2>
 					</div>
-					<div class="max-w-fit overflow-x-auto rounded shadow">
-						<table class="block w-fit text-sm whitespace-nowrap">
-							<thead class="bg-slate-200 border-b-2 border-slate-300 text-slate-700">
+					<div class="max-w-lg border-2 border-slate-300 overflow-x-auto rounded shadow">
+						<table class="w-full whitespace-nowrap">
+							<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
 								<tr>
-									<th class="min-w-full px-6 py-1.5">
-										<div class="text-right">
-											KEY
+									<th class="p-0">
+										<div class="px-6 py-2">
+											<span class="text-sm">
+												KEY
+											</span>
 										</div>
 									</th>
-									<th class="min-w-full px-6 py-1.5">
-										<div class="text-left">
-											VALUE
+									<th class="p-0">
+										<div class="px-6 py-2">
+											<span class="text-sm">
+												VALUE
+											</span>
 										</div>
 									</th>
 								</tr>
 							</thead>
-							<tbody class="text-xs font-mono">
-								<%= for {kwarg_key, kwarg_value} <- job.kwargs_repr do %>
-									<tr
-										class="odd:bg-white even:bg-slate-100"
-										>
-										<td class="px-6 py-1.5">
-											<div class="text-right">
-												<%= kwarg_key %>
+							<tbody>
+								<%= for {kwarg_key_repr, kwarg_value_repr} <- job.kwargs_repr do %>
+									<tr class="even:bg-slate-100">
+										<td class="p-0">
+											<div class="px-6 py-1.5">
+												<span class="text-xs font-mono">
+													<%= kwarg_key_repr %>
+												</span>
 											</div>
 										</td>
-										<td class="px-6 py-1.5">
-											<div>
-												<%= kwarg_value %>
+										<td class="p-0">
+											<div class="px-6 py-1.5">
+												<span class="text-xs font-mono">
+													<%= kwarg_value_repr %>
+												</span>
 											</div>
 										</td>
 									</tr>
@@ -143,74 +157,100 @@
 								<p>No job runs yet! See the documentation on how to start workers to run this job.</p>
 							</div>
 						<% job_runs -> %>
-							<div class="max-w-fit overflow-x-auto rounded shadow">
-								<table class="block w-fit text-sm whitespace-nowrap">
+							<div class="max-w-screen-lg border-2 border-slate-300 overflow-x-auto rounded shadow">
+								<table class="w-full whitespace-nowrap">
 									<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
 										<tr>
-											<th class="min-w-full px-6 py-2">
-												<div>
-													JOB RUN ID
+											<th class="p-0">
+												<div class="px-6 py-2">
+													<span class="text-sm">
+														JOB RUN ID
+													</span>
 												</div>
 											</th>
-											<th class="min-w-full px-6 py-2">
-												<div>
-													STATUS
+											<th class="p-0">
+												<div class="px-6 py-2">
+													<span class="text-sm">
+														STATUS
+													</span>
 												</div>
 											</th>
-											<th class="min-w-full px-6 py-2">
-												<div>
-													OUTPUT
-												</div>
-											</th>
-											<th class="min-w-full px-6 py-2">
-												<div>
-													LAST UPDATED
+											<th class="p-0">
+												<div class="px-6 py-2">
+													<span class="text-sm">
+														UPDATED AT
+													</span>
 												</div>
 											</th>
 										</tr>
 									</thead>
 									<tbody>
 										<%= for job_run <- job_runs do %>
-											<tr class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer">
-												<td class="px-6 py-1.5">
-													<div class="text-xs font-mono group-hover:underline">
-														<%= String.slice(job_run.id, -6..-1) %>
+											<tr class="even:bg-slate-100 hover:bg-slate-200">
+												<td class="p-0">
+													<div class="px-6 py-1.5">
+														<span class="text-xs font-mono">
+															<%= String.slice(job_run.id, -6..-1) %>
+														</span>
 													</div>
 												</td>
-												<td class="px-6 py-1.5">
-													<div class="text-center">
-														<%= case job_run.status do %>
-															<% "IN_PROGRESS" -> %>
-																<div class="w-32 bg-violet-600 text-violet-50 rounded">
-																	In Progress
+												<td class="p-0">
+													<%= case job_run.status do %>
+														<% "IN_PROGRESS" -> %>
+															<div class="px-6 py-1.5">
+																<div class="w-32 bg-violet-600 rounded text-center">
+																	<span class="text-sm text-violet-50 align-text-top">
+																		In Progress
+																	</span>
 																</div>
-															<% "SUCCESS" -> %>
-																<div class="w-32 bg-emerald-700 text-emerald-50 rounded">
-																	Success
+															</div>
+														<% "SUCCESS" -> %>
+															<div class="px-6 py-1.5">
+																<div class="w-32 bg-emerald-700 rounded text-center">
+																	<span class="text-sm text-emerald-50 align-text-top">
+																		Success
+																	</span>
 																</div>
-															<% "FAILED" -> %>
-																<div class="w-32 bg-red-700 text-red-50 rounded">
-																	Failed
+															</div>
+														<% "FAILED" -> %>
+															<div class="px-6 py-1.5">
+																<div class="w-32 bg-red-700 rounded text-center">
+																	<span class="text-sm text-red-50 align-text-top">
+																		Failed
+																	</span>
 																</div>
-															<% "CANCELED" -> %>
-																<div class="w-32 bg-slate-600 text-slate-50 rounded">
-																	Canceled
+															</div>
+														<% "CANCELED" -> %>
+															<div class="px-6 py-1.5">
+																<div class="w-32 bg-slate-600 rounded text-center">
+																	<span class="text-sm text-slate-50 align-text-top">
+																		Canceled
+																	</span>
 																</div>
-															<% "TIMED_OUT" -> %>
-																<div class="w-32 bg-yellow-700 text-yellow-50 rounded">
-																	Timed Out
+															</div>
+														<% "TIMED_OUT" -> %>
+															<div class="px-6 py-1.5">
+																<div class="w-32 bg-yellow-700 rounded text-center">
+																	<span class="text-sm text-yellow-50 align-text-top">
+																		Timed Out
+																	</span>
 																</div>
-														<% end %>
-													</div>
+															</div>
+														<% _ -> %>
+															<div class="px-6 py-1.5">
+																<div class="w-32 bg-slate-600 rounded text-center">
+																	<span class="text-sm text-slate-50 align-text-top">
+																		unknown status
+																	</span>
+																</div>
+															</div>
+													<% end %>
 												</td>
-												<td class="px-6 py-1.5">
-													<div>
-														Output
-													</div>
-												</td>
-												<td class="px-6 py-1.5">
-													<div>
-														<%= Calendar.strftime(job.updated_at, "%c:%f") %>
+												<td class="p-0">
+													<div class="px-6 py-1.5">
+														<span class="text-xs font-mono">
+															<%= Calendar.strftime(job_run.updated_at, "%c:%f") %>
+														</span>
 													</div>
 												</td>
 											</tr>
@@ -230,33 +270,69 @@
 								<p>No events yet!</p>
 							</div>
 						<% events -> %>
-							<div class="max-w-fit overflow-x-auto rounded shadow">
-								<table class="block w-fit text-sm whitespace-nowrap">
+							<div class="border-2 border-slate-300 overflow-x-auto rounded shadow">
+								<table class="w-full whitespace-nowrap">
 									<thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
 										<tr>
-											<th class="min-w-full px-6 py-2">
-												<div>
-													ID
+											<th class="p-0">
+												<div class="px-6 py-2">
+													<span class="text-sm">
+														EVENT ID
+													</span>
 												</div>
 											</th>
-											<th class="min-w-full px-6 py-2">
-												<div>
-													RAW DATA
+											<th class="p-0">
+												<div class="px-6 py-2">
+													<span class="text-sm">
+														TYPE
+													</span>
+												</div>
+											</th>
+											<th class="p-0">
+												<div class="px-6 py-2">
+													<span class="text-sm">
+														TIMESTAMP
+													</span>
+												</div>
+											</th>
+											<th class="p-0">
+												<div class="px-6 py-2">
+													<span class="text-sm">
+														RAW DATA
+													</span>
 												</div>
 											</th>
 										</tr>
 									</thead>
 									<tbody>
 										<%= for event <- events do %>
-											<tr class="group text-left odd:bg-white even:bg-slate-100 hover:bg-slate-200 hover:cursor-pointer">
-												<td class="px-6 py-1.5">
-													<div class="text-xs font-mono group-hover:underline">
-														<%= String.slice(event.id, -6..-1) %>
+											<tr class="even:bg-slate-100">
+												<td class="p-0">
+													<div class="px-6 py-1.5">
+														<span class="text-xs font-mono">
+															<%= event.id %>
+														</span>
 													</div>
 												</td>
-												<td class="px-6 py-1.5">
-													<div>
-														<%= Jason.encode!(event.data) %>
+												<td class="p-0">
+													<div class="px-6 py-1.5">
+														<span class="text-xs font-mono">
+															<%= event.type %>
+														</span>
+													</div>
+												</td>
+												<td class="p-0">
+													<div class="px-6 py-1.5">
+														<span class="text-xs font-mono">
+															<%= Calendar.strftime(event.timestamp, "%c:%f") %>
+														</span>
+													</div>
+												</td>
+												<td class="p-0">
+													<div class="px-6 py-1.5">
+														<span class="text-xs font-mono">
+															<%= Jason.encode!(event.data) %>
+														</span>
 													</div>
 												</td>
 											</tr>

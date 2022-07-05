@@ -1,0 +1,30 @@
+<div class="max-w-screen-lg border-2 border-slate-300 overflow-x-auto rounded shadow">
+  <table class="w-full whitespace-nowrap">
+    <thead class="bg-slate-200 border-b-2 border-slate-300 text-left text-slate-700">
+      <tr>
+        <th class="p-0">
+          <div class="px-6 py-2">
+            <span class="text-sm">
+              COLUMN
+            </span>
+          </div>
+        </th>"
+      </tr>
+    </thead>
+    <tbody>
+      <%= for item <- [] do %>
+        <tr class="group even:bg-slate-100 hover:bg-slate-200">
+          <td class="p-0">
+            <%= link to: "#",
+                      class: "block px-6 py-1.5"
+              do %>
+              <span class="text-xs font-mono group-hover:underline">
+                <%= String.slice(job.id, -6..-1) %>
+              </span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
