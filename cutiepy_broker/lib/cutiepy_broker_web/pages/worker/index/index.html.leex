@@ -4,7 +4,7 @@
 	</div>
 	<%= case @workers do %>
 	<% [] -> %>
-		<p>No workers yet! See the documentation on how to start new workers for CutiePy.</p>
+		<p>No workers yet! See the <%= link "documentation", to: "https://cutiepy.org/docs", class: "underline hover:cursor-pointer" %> on how to start new workers for CutiePy.</p>
 	<% workers -> %>
 		<div class="max-w-fit overflow-x-auto rounded shadow">
 			<table class="block w-fit text-sm whitespace-nowrap">

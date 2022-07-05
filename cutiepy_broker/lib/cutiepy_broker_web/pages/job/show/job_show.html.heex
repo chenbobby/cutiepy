@@ -154,7 +154,7 @@
 					<%= case @job_runs do %>
 						<% [] -> %>
 							<div>
-								<p>No job runs yet! See the documentation on how to start workers to run this job.</p>
+								<p>No job runs yet! See the <%= link "documentation", to: "https://cutiepy.org/docs", class: "underline hover:cursor-pointer" %> on how to start workers to run this job.</p>
 							</div>
 						<% job_runs -> %>
 							<div class="max-w-screen-lg border-2 border-slate-300 overflow-x-auto rounded shadow">

@@ -6,7 +6,7 @@
 	</div>
 	<%= case @recurring_jobs do %>
 	<% [] -> %>
-		<p>No recurring jobs yet! See the documentation on how to create recurring jobs.</p>
+		<p>No recurring jobs yet! See the <%= link "documentation", to: "https://cutiepy.org/docs", class: "underline hover:cursor-pointer" %> on how to create recurring jobs.</p>
 	<% recurring_jobs -> %>
 		<div class="max-w-screen-lg border-2 border-slate-300 overflow-x-auto rounded shadow">
 			<table class="w-full whitespace-nowrap">

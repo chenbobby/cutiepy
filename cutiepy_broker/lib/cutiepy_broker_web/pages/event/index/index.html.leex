@@ -4,7 +4,7 @@
 	</div>
 	<%= case @events do %>
 	<% [] -> %>
-		<p>No events yet! See the documentation on how to create new events for CutiePy.</p>
+		<p>No events yet! See the <%= link "documentation", to: "https://cutiepy.org/docs", class: "underline hover:cursor-pointer" %> on how to create new events for CutiePy.</p>
 	<% events -> %>
 	<div class="_table-container border-2 border-slate-300 overflow-x-auto rounded shadow">
 		<div class="_table table w-full whitespace-nowrap">

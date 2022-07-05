@@ -6,7 +6,7 @@
 	</div>
 	<%= case @jobs do %>
 	<% [] -> %>
-		<p>No jobs yet! See the documentation on how to create new jobs for CutiePy.</p>
+		<p>No jobs yet! See the <%= link "documentation", to: "https://cutiepy.org/docs", class: "underline hover:cursor-pointer" %> on how to create new jobs for CutiePy.</p>
 	<% jobs -> %>
 		<div class="max-w-screen-lg border-2 border-slate-300 overflow-x-auto rounded shadow">
 			<table class="w-full whitespace-nowrap">
