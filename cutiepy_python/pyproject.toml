@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "cutiepy"
 description = "CutiePy is an open source job scheduler for Python workloads."
-readme = "README.md"
+readme = "../README.md"
 requires-python = ">=3.7"
 license = "Apache-2.0"
 authors = [
