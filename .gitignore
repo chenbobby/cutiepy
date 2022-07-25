@@ -1,5 +1,8 @@
-__pycache__
-.mypy_cache
-.venv
+__pycache__/
+.mypy_cache/
+.venv/
+.user_venv/
+dist/
+
 .DS_Store
-dist
+cutiepy.db*

@@ -22,7 +22,7 @@ class Registry:
     _broker_url: str
     _function_key_to_function: Dict[str, Callable]
 
-    def __init__(self, broker_url: str) -> None:
+    def __init__(self, broker_url: str = "http://localhost:9000") -> None:
         self._broker_url = broker_url
         self._function_key_to_function = {}
 
@@ -352,22 +352,42 @@ def broker_cli_group() -> int:
     name="migrate", help="Applies database migrations for a broker."
 )
 def broker_migrate_command() -> int:
-    path = pathlib.Path(__file__).parent.joinpath(
+    return _broker_migrate()
+
+
+def _broker_migrate():
+    migrate_bin_path = pathlib.Path(__file__).parent.joinpath(
         "../../cutiepy_broker/_build/prod/rel/cutiepy_broker/bin/migrate"
     )
-    return subprocess.call(path)
+    database_path = f"{str(pathlib.Path.cwd())}/cutiepy.db"
+    return subprocess.call(
+        [migrate_bin_path],
+        env={
+            "DATABASE_PATH": database_path,
+        },
+    )
 
 
 @broker_cli_group.command(name="run", help="Starts a broker.")
 def broker_run_command() -> int:
-    path = pathlib.Path(__file__).parent.joinpath(
+    server_bin_path = pathlib.Path(__file__).parent.joinpath(
         "../../cutiepy_broker/_build/prod/rel/cutiepy_broker/bin/server"
     )
-    return subprocess.call(path)
+
+    database_path = f"{str(pathlib.Path.cwd())}/cutiepy.db"
+    if not pathlib.Path(database_path).is_file():
+        _broker_migrate()
+
+    return subprocess.call(
+        [server_bin_path],
+        env={
+            "DATABASE_PATH": database_path,
+        },
+    )
 
 
 @cutiepy_cli_group.command(name="worker", help="Starts worker(s) to run jobs.")
-@click.option("-bu", "--broker-url", type=str, default="http://localhost:4000")
+@click.option("-bu", "--broker-url", type=str, default="http://localhost:9000")
 def worker_command(broker_url: str) -> NoReturn:
     response = requests.post(url=f"{broker_url}/api/register_worker")
     assert response.ok

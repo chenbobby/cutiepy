@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 import cutiepy
 
-registry = cutiepy.Registry(broker_url="http://localhost:4000")
+registry = cutiepy.Registry()
 
 
 @registry.job
@@ -23,8 +23,7 @@ def half_second(x, y):
 
 
 if __name__ == "__main__":
-    # for _ in range(20):
-    #     succeed.enqueue_job(args=[9, 10])
+    succeed.enqueue_job(args=[9, 10])
     # fail.enqueue_job(args=[9, 10])
     # half_second.enqueue_job(args=[9, 10])
     # half_second.enqueue_job(args=[9, 10], job_timeout_ms=400)
@@ -32,8 +31,8 @@ if __name__ == "__main__":
     # half_second.enqueue_job(args=[9, 10], job_timeout_ms=1000)
     # half_second.enqueue_job(args=[9, 10], job_run_timeout_ms=1000)
 
-    two_seconds_later = datetime.now(timezone.utc) + timedelta(seconds=2)
-    succeed.create_scheduled_job(args=[9, 10], enqueue_after=two_seconds_later)
+    # two_seconds_later = datetime.now(timezone.utc) + timedelta(seconds=2)
+    # succeed.create_scheduled_job(args=[9, 10], enqueue_after=two_seconds_later)
 
     # succeed.create_recurring_job(
     #     args=[9, 10],

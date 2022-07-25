@@ -51,9 +51,10 @@ Documentation = "https://cutiepy.org/docs"
 cutiepy = "cutiepy:main"
 
 [tool.hatch.build]
-packages = ["src/cutiepy"]
-artifacts = ["cutiepy_broker/_build/prod/rel/cutiepy_broker"]
 only-packages = true
+
+[tool.hatch.build.force-include]
+"cutiepy_broker/_build/prod/rel/cutiepy_broker" = "cutiepy_broker/_build/prod/rel/cutiepy_broker"
 
 [tool.hatch.version]
 path = "src/cutiepy/__version__.py"
