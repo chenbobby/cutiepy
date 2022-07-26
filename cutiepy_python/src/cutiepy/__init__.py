@@ -14,15 +14,25 @@ import requests
 from cutiepy.__version__ import __version__
 
 
-def main() -> None:
-    cutiepy_cli_group()
+def main() -> NoReturn:
+    """This is the docstring for main."""
+    sys.exit(cutiepy_cli_group())
 
 
 class Registry:
+    """
+    This is the class docstring.
+
+    Hello registry.
+    """
+
     _broker_url: str
     _function_key_to_function: Dict[str, Callable]
 
     def __init__(self, broker_url: str = "http://localhost:9000") -> None:
+        """
+        This is the init docstring.
+        """
         self._broker_url = broker_url
         self._function_key_to_function = {}
 
@@ -49,7 +59,7 @@ class Registry:
     ) -> None:
         """
         `enqueue_job` enqueues a job to execute `registered_function` with
-        positional arguments `args` and keyword arguments `kwargs`.
+        positional arguments `args` and keyword arguments `kwargs`. Change.
         """
         function_key = registered_function.function_key
         if function_key not in self:
@@ -129,8 +139,7 @@ class Registry:
         job_timeout_ms: Optional[int] = None,
         job_run_timeout_ms: Optional[int] = None,
     ) -> None:
-        """
-        `create_recurring_job` creates a recurring job. The job will be first
+        """`create_recurring_job` creates a recurring job. The job will be first
         started after `start_after` and then create_recurrings every
         `interval_ms`.
         """
@@ -199,8 +208,7 @@ class RegisteredFunction:
         job_timeout_ms: Optional[int] = None,
         job_run_timeout_ms: Optional[int] = None,
     ) -> None:
-        """
-        `enqueue_job` enqueues a job to execute `registered_function` with
+        """`enqueue_job` enqueues a job to execute `registered_function` with
         positional arguments `args` and keyword arguments `kwargs`.
         """
         if job_timeout_ms is not None:
@@ -226,8 +234,7 @@ class RegisteredFunction:
         job_timeout_ms: Optional[int] = None,
         job_run_timeout_ms: Optional[int] = None,
     ) -> None:
-        """
-        `create_scheduled_job` will schedule a job to be enqueued after
+        """`create_scheduled_job` will schedule a job to be enqueued after
         `enqueue_after`.
         """
         if job_timeout_ms is not None:
@@ -255,8 +262,7 @@ class RegisteredFunction:
         job_timeout_ms: Optional[int] = None,
         job_run_timeout_ms: Optional[int] = None,
     ) -> None:
-        """
-        `create_recurring_job` creates a recurring job. The job will be first
+        """`create_recurring_job` creates a recurring job. The job will be first
         started after `start_after` and then create_recurrings every
         `interval_ms`.
         """

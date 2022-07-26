@@ -1,6 +1,4 @@
-import sys
-
-from cutiepy import main
+import cutiepy
 
 if __name__ == "__main__":
-    sys.exit(main())
+    cutiepy.main()
