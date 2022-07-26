@@ -33,16 +33,13 @@ const config = {
       /** @type {import("@docusaurus/preset-classic").Options} */
       ({
         docs: {
+          routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
             "https://github.com/chenbobby/cutiepy/tree/main/cutiepy_website/",
         },
         blog: {
           showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
             "https://github.com/chenbobby/cutiepy/tree/main/cutiepy_website/",
         },
@@ -69,12 +66,12 @@ const config = {
             position: "left",
             label: "Documentation",
           },
-          { to: "/blog", label: "Blog", position: "left" },
-          { to: "/about", label: "About", position: "left" },
+          { to: "/blog", label: "Blog", position: "right" },
+          { to: "/about", label: "About", position: "right" },
           {
             href: "https://github.com/chenbobby/cutiepy",
             label: "Source Code",
-            position: "left",
+            position: "right",
           },
         ],
       },
@@ -86,23 +83,23 @@ const config = {
             items: [
               {
                 label: "Home",
-                to: "/docs",
+                to: "/",
               },
               {
                 label: "Quickstart",
-                to: "/docs/quickstart",
+                to: "/quickstart",
               },
               {
                 label: "Tutorial",
-                to: "/docs/tutorial",
+                to: "/tutorial",
               },
               {
                 label: "Explanations",
-                to: "/docs/explanations",
+                to: "/explanations",
               },
               {
                 label: "API Reference",
-                to: "/docs/reference",
+                to: "/reference",
               },
             ],
           },

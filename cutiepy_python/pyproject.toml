@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "cutiepy"
 description = "CutiePy is an open source job scheduler for Python workloads."
-readme = "../README.md"
+readme = "README.md"
 requires-python = ">=3.7"
 license = "Apache-2.0"
 authors = [
@@ -13,9 +13,9 @@ authors = [
 ]
 keywords = [
   "job scheduler",
+  "job queue",
   "task queue",
-  "job scheduler",
-  "cron",
+  "cronjob",
   "worker",
   "broker"
 ]
@@ -31,13 +31,18 @@ dependencies = [
   "types-requests>=2.28",
 ]
 dev-dependencies = [
+  # Code Consistency
   "black",
   "flake8",
-  "hatch",
   "isort",
   "mypy",
+
+  # Tests
   "pytest",
   "pytest-cov",
+
+  # Builds
+  "hatch",
 ]
 dynamic = ["version"]
 
